@@ -1,6 +1,7 @@
 # Secrets & local env
 .env
 secrets/
+indexers.yml
 
 # Persisted service configuration (mounted into containers)
 config/*

@@ -1,0 +1,33 @@
+# ----------------------------------------------------------------------------
+# Dockarr — Prowlarr indexers (config-driven)
+# Copy this file to `indexers.yml` (gitignored — it holds tracker secrets) and
+# fill it in, then run `make bootstrap m=prowlarr-indexers` (or `make bootstrap`).
+#
+#   name   : MUST match a Prowlarr indexer definition exactly, as shown in
+#            Prowlarr's "Add Indexer" list (e.g. "TorrentLeech", "BeyondHD").
+#   enable : true/false (default true)
+#   fields : credential/option values, using the field names from Prowlarr's
+#            indexer settings (e.g. username, password, apiKey, rssKey).
+#   force  : true to add even if Prowlarr's connectivity test fails (e.g. a
+#            Cloudflare-protected tracker that needs FlareSolverr).
+#
+# An indexer whose test fails is logged as a WARNING and skipped — it never
+# blocks the rest of the bootstrap.
+# ----------------------------------------------------------------------------
+
+indexers: []
+  # --- Private tracker with username / password ---
+  # - name: "TorrentLeech"
+  #   fields:
+  #     username: "your-username"
+  #     password: "your-password"
+
+  # --- Private tracker with API key ---
+  # - name: "BeyondHD"
+  #   fields:
+  #     apiKey: "your-api-key"
+  #     rssKey: "your-rss-key"
+
+  # --- Public tracker behind Cloudflare (needs FlareSolverr) ---
+  # - name: "1337x"
+  #   force: true
