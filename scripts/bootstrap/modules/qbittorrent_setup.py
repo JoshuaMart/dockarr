@@ -10,6 +10,10 @@ CATEGORIES = {
     "radarr": "/data/torrents/movies",
     "sonarr": "/data/torrents/tv",
 }
+# Cap concurrent downloads; keep uploads/active torrents unlimited so seeding
+# is never throttled (good for private-tracker ratio). Edit to taste.
+MAX_ACTIVE_DOWNLOADS = 3
+
 # Automatic TMM is what actually routes downloads into the category subfolders;
 # the relocate flags keep existing torrents in sync when paths change.
 PREFERENCES = {
@@ -18,6 +22,10 @@ PREFERENCES = {
     "torrent_changed_tmm_enabled": True,
     "save_path_changed_tmm_enabled": True,
     "category_changed_tmm_enabled": True,
+    "queueing_enabled": True,
+    "max_active_downloads": MAX_ACTIVE_DOWNLOADS,
+    "max_active_uploads": -1,
+    "max_active_torrents": -1,
 }
 
 
