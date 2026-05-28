@@ -71,7 +71,11 @@ class QBittorrent(Module):
             )
 
         username, password = ctx.secrets.create("qbittorrent")
-        prefs = {"web_ui_username": username, "web_ui_password": password}
+        prefs = {
+            "web_ui_username": username,
+            "web_ui_password": password,
+            "locale": ctx.secrets.language or "en",
+        }
         resp = client.post(
             "/api/v2/app/setPreferences",
             data={"json": json.dumps(prefs)},

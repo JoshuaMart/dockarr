@@ -6,6 +6,10 @@ from ..core.registry import Module
 
 API_KEY_RE = re.compile(r"<ApiKey>([^<]+)</ApiKey>")
 
+# Radarr/Sonarr expose uiLanguage as a Language-enum id; Prowlarr uses a
+# culture string. Names map to the entries in /api/{v}/language.
+LANGUAGE_NAMES = {"en": "English", "fr": "French"}
+
 
 def _api_key(container):
     result = subprocess.run(
@@ -40,6 +44,40 @@ class ServarrModule(Module):
 
     def _host_path(self):
         return f"/api/{self.api_version}/config/host"
+
+    def _ui_path(self):
+        return f"/api/{self.api_version}/config/ui"
+
+    def _language_id(self, client, lang):
+        resp = client.get(f"/api/{self.api_version}/language")
+        if not resp.ok:
+            return None
+        wanted = LANGUAGE_NAMES.get(lang, "English")
+        for entry in resp.json():
+            if entry.get("name") == wanted:
+                return entry.get("id")
+        return None
+
+    def _set_ui_language(self, ctx, client):
+        lang = ctx.secrets.language or "en"
+        resp = client.get(self._ui_path())
+        if not resp.ok:
+            return
+        ui = resp.json()
+        current = ui.get("uiLanguage")
+        # Prowlarr stores a culture string; the *arr apps store a numeric id.
+        if isinstance(current, str):
+            value = lang
+        else:
+            value = self._language_id(client, lang)
+            if value is None:
+                return
+        if current == value:
+            return
+        ui["uiLanguage"] = value
+        put = client.put(self._ui_path(), json=ui)
+        if put.status_code in (200, 202):
+            ctx.log.info(f"  UI language set to {lang}")
 
     def is_done(self, ctx):
         if not ctx.secrets.get(self.name):
@@ -77,6 +115,8 @@ class ServarrModule(Module):
                 f"PUT config/host failed: HTTP {put.status_code} {put.text[:200]}"
             )
         ctx.log.info(f"  Forms auth enabled for '{username}'")
+
+        self._set_ui_language(ctx, client)
 
 
 RADARR = ServarrModule("radarr", "v3")
