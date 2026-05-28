@@ -14,6 +14,7 @@ def load_modules():
     here as integrations are built."""
     from ..modules import (
         arr_setup,
+        jellyfin,
         kavita,
         profilarr,
         profilarr_targets,
@@ -22,6 +23,7 @@ def load_modules():
         qbittorrent_setup,
         qui,
         qui_arr,
+        seerr,
         servarr,
     )
 
@@ -35,10 +37,12 @@ def load_modules():
         servarr.PROWLARR,
         kavita.MODULE,
         profilarr.MODULE,
+        jellyfin.MODULE,
         arr_setup.RADARR_SETUP,
         arr_setup.SONARR_SETUP,
         prowlarr_apps.MODULE,
         profilarr_targets.MODULE,
+        seerr.MODULE,
     ]
 
 
