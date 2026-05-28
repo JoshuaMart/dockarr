@@ -16,7 +16,8 @@ help: ## Show this help
 
 install: ## First-time setup: create .env, data folders, start the stack, provision
 	@test -f .env || (cp .env.example .env && echo "Created .env — edit it then re-run 'make install'")
-	@mkdir -p data/torrents data/media/movies data/media/tv data/media/books
+	@mkdir -p data/torrents/movies data/torrents/tv data/torrents/books \
+		data/media/movies data/media/tv data/media/books
 	$(MAKE) up
 	$(MAKE) bootstrap
 

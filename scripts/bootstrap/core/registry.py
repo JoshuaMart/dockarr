@@ -12,16 +12,29 @@ class Module:
 def load_modules():
     """Return every available module, in declaration order. Add new modules
     here as integrations are built."""
-    from ..modules import kavita, profilarr, qbittorrent, qui, servarr
+    from ..modules import (
+        arr_setup,
+        kavita,
+        profilarr,
+        prowlarr_apps,
+        qbittorrent,
+        qbittorrent_setup,
+        qui,
+        servarr,
+    )
 
     return [
         qbittorrent.MODULE,
+        qbittorrent_setup.MODULE,
         qui.MODULE,
         servarr.RADARR,
         servarr.SONARR,
         servarr.PROWLARR,
         kavita.MODULE,
         profilarr.MODULE,
+        arr_setup.RADARR_SETUP,
+        arr_setup.SONARR_SETUP,
+        prowlarr_apps.MODULE,
     ]
 
 
