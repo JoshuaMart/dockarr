@@ -17,11 +17,15 @@
 
 ```text
 ${DOCKARR_DATA}/
-├── torrents/          # qBittorrent download dir
+├── torrents/              # qBittorrent download dir (movies/ tv/ books/)
 └── media/
-    ├── movies/        # Radarr  → Jellyfin
-    ├── tv/            # Sonarr  → Jellyfin
-    └── books/         # Kavita
+    ├── movies/            # Radarr  → Jellyfin
+    ├── tv/                # Sonarr  → Jellyfin
+    └── books/             # Kavita
+        ├── manga/         #   library "Manga"
+        ├── comics/        #   library "Comics"
+        ├── bd/            #   library "BD"
+        └── livres/        #   library "Livres"
 
 ${DOCKARR_CONFIG}/
 ├── qbittorrent/  qui/  prowlarr/  radarr/  sonarr/

@@ -1,53 +1,86 @@
 # Configuration
 
-Once the stack is running, wire the services together. Do it in this order.
+`make install` already wired the stack together through the **bootstrap** step:
+accounts are created, services are connected and the media libraries exist.
+This page lists what was set up automatically, the single step left to you, and
+how to expose everything behind HTTPS.
 
-## 1. qBittorrent
+!!! info "Credentials"
+    All services share the username and password chosen at first run. Print
+    them with `make creds` (stored in `secrets/credentials.json`).
 
-- Default login is `admin` / a temporary password printed in the logs:
-  `make logs s=qbittorrent`.
-- Set the download path to `/data/torrents`.
-- Optionally manage it from **QUI** (`:7476`) for a nicer multi-instance UI.
+## What bootstrap configures
 
-## 2. Prowlarr (indexers)
+| Service | Done automatically |
+| --- | --- |
+| **qBittorrent** | Account, save path `/data/torrents`, Automatic TMM, `radarr`/`sonarr` categories. |
+| **QUI** | Admin account, qBittorrent instance registered. |
+| **Radarr / Sonarr** | Account + forms auth, qBittorrent download client, root folder (`/data/media/movies`, `/data/media/tv`). |
+| **Prowlarr** | Account + forms auth, Radarr & Sonarr registered as applications (indexers sync to them automatically). |
+| **Profilarr** | Account, Radarr/Sonarr registered as sync targets. Optionally the French database + a quality profile (see below). |
+| **Seerr** | Linked to Jellyfin, Radarr & Sonarr added as default servers. |
+| **Jellyfin** | Admin + setup wizard, `Movies` and `TV Shows` libraries. |
+| **Kavita** | Admin, `Manga` / `Comics` / `BD` / `Livres` libraries (unless disabled at first run). |
 
-- Add your indexers/trackers.
-- Under **Settings → Apps**, add Radarr and Sonarr so indexers sync to them
-  automatically. Use the internal hostnames `http://radarr:7878` and
-  `http://sonarr:8989` and each app's API key.
+Re-run any single service with `make bootstrap m=<service>` — it is idempotent.
 
-## 3. Radarr & Sonarr
+## The one manual step: indexers
 
-- Add a **download client** → qBittorrent at `http://qbittorrent:8080`.
-- Set the **root folder** to `/data/media/movies` (Radarr) and
-  `/data/media/tv` (Sonarr).
+Bootstrap connects Prowlarr to Radarr/Sonarr but it does **not** add indexers
+for you (those are personal to your trackers). To finish:
 
-## 4. Profilarr (quality profiles)
+1. Open **Prowlarr** (`http://SERVER_IP:9696` or `prowlarr.yourdomain`), log in
+   with `make creds`.
+2. **Settings → Indexers → Add indexer** and add your trackers.
 
-- Point Profilarr (`:6868`) at Radarr/Sonarr to import and keep curated
-  quality profiles and custom formats in sync.
+Because Radarr and Sonarr are already registered as Prowlarr applications
+(`fullSync`), every indexer you add is pushed to them automatically — nothing
+else to configure.
 
-## 5. Seerr (requests)
+## Quality profiles (Profilarr FR)
 
-- Connect it to Jellyfin and to Radarr/Sonarr (`http://radarr:7878`,
-  `http://sonarr:8989`) so user requests are sent to the right app.
+If you accepted **Profilarr FR** at first run, a curated French database is
+cloned and its chosen quality profile (plus custom formats, naming and delay
+profiles) is synced to Radarr and Sonarr, and Seerr defaults to it. Otherwise
+Radarr/Sonarr keep their built-in `Any` profile and you can curate profiles
+yourself in Profilarr (`:6868`).
 
-## 6. Jellyfin & Kavita
+## Internal networking
 
-- **Jellyfin** (`:8096`): add libraries from `/media/movies` and `/media/tv`.
-- **Kavita** (`:5000`): add a library from `/books`.
+Services reach each other over the internal `dockarr` Docker network by
+container name. If you wire anything by hand, always use `http://<service>:<port>`
+(e.g. `http://radarr:7878`) — never `localhost`.
 
 ## Reverse proxy (Caddy)
 
-Services talk to each other over the internal `dockarr` Docker network by
-container name, so always use `http://<service>:<port>` in the settings above —
-never `localhost`.
+[Caddy](https://caddyserver.com/) fronts every service on a dedicated
+subdomain of `DOCKARR_DOMAIN`:
 
-To expose them publicly with HTTPS:
+| Service | URL |
+| --- | --- |
+| qBittorrent | `qbittorrent.yourdomain` |
+| QUI | `qui.yourdomain` |
+| Prowlarr | `prowlarr.yourdomain` |
+| Radarr | `radarr.yourdomain` |
+| Sonarr | `sonarr.yourdomain` |
+| Profilarr | `profilarr.yourdomain` |
+| Seerr | `seerr.yourdomain` |
+| Jellyfin | `jellyfin.yourdomain` |
+| Kavita | `kavita.yourdomain` |
 
-1. Create a wildcard DNS record `*.yourdomain` → your host IP.
-2. Set `DOCKARR_DOMAIN` and `CADDY_EMAIL` in `.env`.
+To expose the stack with automatic HTTPS:
+
+1. Point a **wildcard DNS record** `*.yourdomain` at your host's public IP.
+2. Set `DOCKARR_DOMAIN` (e.g. `media.example.com`) and `CADDY_EMAIL` in `.env`.
 3. `make restart`.
 
-Caddy then serves `radarr.yourdomain`, `jellyfin.yourdomain`, etc. with
-automatic certificates. Edit `caddy/Caddyfile` to add or remove routes.
+Caddy then obtains and renews Let's Encrypt certificates on its own, and serves
+each service over HTTPS.
+
+!!! note "Local use"
+    With the default `DOCKARR_DOMAIN=dockarr.local` Caddy issues a self-signed
+    certificate, so browsers warn about it — that is expected for local-only
+    use. Either accept the warning, or just use direct port access
+    (`http://SERVER_IP:<port>`).
+
+Add or remove routes by editing `caddy/Caddyfile`, then `make restart`.
