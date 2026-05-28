@@ -48,6 +48,14 @@ class SecretStore:
         self.data["_profilarr_fr"] = {"enabled": enabled, "profile": profile}
         self.save()
 
+    @property
+    def kavita(self):
+        return self.data.get("_kavita")
+
+    def set_kavita(self, enabled):
+        self.data["_kavita"] = {"enabled": enabled}
+        self.save()
+
     def set_policy(self, username, password_mode, shared_password=None):
         self.data["_policy"] = {
             "username": username,

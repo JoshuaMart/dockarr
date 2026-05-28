@@ -24,6 +24,27 @@ def ensure_language(store):
     print(f"  -> {'Français' if choice == '2' else 'English'}\n")
 
 
+def ensure_kavita(store):
+    """Ask once whether to run Kavita. If declined, the kavita module stops the
+    container (started by `make up`) and skips its provisioning."""
+    if store.kavita is not None:
+        return
+
+    if not sys.stdin.isatty():
+        store.set_kavita(True)
+        print("[bootstrap] non-interactive run: Kavita enabled")
+        return
+
+    print("\nKavita — serveur de livres / BD / mangas:")
+    choice = None
+    while choice not in ("o", "n", "y"):
+        choice = input("Activer Kavita ? [O/n] : ").strip().lower() or "o"
+
+    enabled = choice in ("o", "y")
+    store.set_kavita(enabled)
+    print(f"  -> Kavita {'activé' if enabled else 'désactivé (conteneur arrêté)'}\n")
+
+
 DEFAULT_FR_PROFILE = "1080p Efficient FR"
 
 

@@ -1,5 +1,9 @@
+import subprocess
+
 from ..core.http import ApiClient
 from ..core.registry import Module
+
+CONTAINER = "kavita"
 
 # (display name, Kavita LibraryType enum, in-container folder). Kavita parses
 # each library according to its single type, so books are split by content type
@@ -16,9 +20,22 @@ LIBRARIES = [
 FILE_GROUP_TYPES = [1, 2, 3, 4]
 
 
+def _container_running():
+    result = subprocess.run(
+        ["docker", "inspect", "-f", "{{.State.Running}}", CONTAINER],
+        capture_output=True,
+        text=True,
+    )
+    return result.returncode == 0 and result.stdout.strip() == "true"
+
+
 class Kavita(Module):
     name = "kavita"
     depends = ()
+
+    def _enabled(self, ctx):
+        cfg = ctx.secrets.kavita
+        return True if cfg is None else cfg.get("enabled", True)
 
     def _client(self, ctx):
         return ApiClient(ctx.config.service_url("kavita"))
@@ -85,6 +102,9 @@ class Kavita(Module):
             ctx.log.info(f"  library '{name}' -> {folder}")
 
     def is_done(self, ctx):
+        if not self._enabled(ctx):
+            # Disabled: the only "work" is making sure the container is stopped.
+            return not _container_running()
         creds = ctx.secrets.get("kavita")
         if not creds:
             return False
@@ -100,6 +120,19 @@ class Kavita(Module):
         return all(folder in folders for _, _, folder in LIBRARIES)
 
     def run(self, ctx):
+        if not self._enabled(ctx):
+            if _container_running():
+                subprocess.run(["docker", "stop", CONTAINER], capture_output=True)
+                ctx.log.info("  Kavita disabled — container stopped")
+            else:
+                ctx.log.info("  Kavita disabled — skipping")
+            return
+
+        # Re-enabled after being stopped: bring the container back up.
+        if not _container_running():
+            subprocess.run(["docker", "start", CONTAINER], capture_output=True)
+            ctx.log.info("  Kavita container started")
+
         client = self._client(ctx)
         client.wait_until_up("/api/health")
 
