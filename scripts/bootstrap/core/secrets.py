@@ -32,6 +32,14 @@ class SecretStore:
     def policy(self):
         return self.data.get("_policy")
 
+    @property
+    def language(self):
+        return self.data.get("_language")
+
+    def set_language(self, language):
+        self.data["_language"] = language
+        self.save()
+
     def set_policy(self, username, password_mode, shared_password=None):
         self.data["_policy"] = {
             "username": username,

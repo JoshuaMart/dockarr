@@ -6,10 +6,9 @@ from .servarr import _api_key
 JELLYFIN_HOST = "jellyfin"
 JELLYFIN_PORT = 8096
 
-# This profile is provided by the Profilarr French database and only exists in
-# Radarr/Sonarr AFTER you import + sync it in Profilarr. Until then the Seerr
-# module skips the DVR (with a warning) and self-heals on the next bootstrap.
-DEFAULT_PROFILE = "1080p Quality FR"
+# "Any" is a Radarr/Sonarr built-in, so it always exists (no Profilarr
+# dependency). Change later to a curated profile name if desired.
+DEFAULT_PROFILE = "Any"
 RADARR = {"host": "radarr", "port": 7878, "root": "/data/media/movies"}
 SONARR = {"host": "sonarr", "port": 8989, "root": "/data/media/tv"}
 
@@ -23,15 +22,18 @@ def _pick(items, key, value):
 
 class Seerr(Module):
     """Initialise Seerr headlessly: authenticate against Jellyfin (creating the
-    Seerr admin), then register Radarr & Sonarr as default servers using the
-    chosen quality profile. If that profile isn't in Radarr/Sonarr yet (Profilarr
-    sync not done), the DVR is skipped with a warning and added on a later run."""
+    Seerr admin), register Radarr & Sonarr as default servers, and apply the
+    French locale when the stack language is 'fr'."""
 
     name = "seerr"
     depends = ("jellyfin", "radarr", "sonarr")
 
     def _client(self, ctx):
         return ApiClient(ctx.config.service_url("seerr"))
+
+    def _initialized(self, client):
+        resp = client.get("/api/v1/settings/public")
+        return resp.ok and resp.json().get("initialized") is True
 
     def _auth(self, ctx, client):
         jf = ctx.secrets.get("jellyfin")
@@ -55,10 +57,6 @@ class Seerr(Module):
         resp = client.post("/api/v1/auth/jellyfin", json=body)
         return resp.status_code in (200, 201)
 
-    def _initialized(self, client):
-        resp = client.get("/api/v1/settings/public")
-        return resp.ok and resp.json().get("initialized") is True
-
     def _server(self, client, kind, hostname):
         resp = client.get(f"/api/v1/settings/{kind}")
         if not resp.ok:
@@ -67,6 +65,12 @@ class Seerr(Module):
             if server.get("hostname") == hostname and not server.get("is4k"):
                 return server
         return None
+
+    def _locale_ok(self, ctx, client):
+        if (ctx.secrets.language or "en") != "fr":
+            return True
+        resp = client.get("/api/v1/settings/main")
+        return resp.ok and resp.json().get("locale") == "fr"
 
     def is_done(self, ctx):
         try:
@@ -80,10 +84,12 @@ class Seerr(Module):
             return False
         radarr = self._server(client, "radarr", RADARR["host"])
         sonarr = self._server(client, "sonarr", SONARR["host"])
-        return bool(
+        if not (
             radarr and radarr.get("activeProfileName") == DEFAULT_PROFILE
             and sonarr and sonarr.get("activeProfileName") == DEFAULT_PROFILE
-        )
+        ):
+            return False
+        return self._locale_ok(ctx, client)
 
     def run(self, ctx):
         client = self._client(ctx)
@@ -106,6 +112,17 @@ class Seerr(Module):
                 raise RuntimeError(f"Seerr initialize failed: HTTP {init.status_code}")
             ctx.log.info("  Seerr initialized")
 
+        self._ensure_locale(ctx, client)
+
+    def _ensure_locale(self, ctx, client):
+        if (ctx.secrets.language or "en") != "fr":
+            return
+        if self._locale_ok(ctx, client):
+            return
+        resp = client.post("/api/v1/settings/main", json={"locale": "fr"})
+        if resp.status_code in (200, 201):
+            ctx.log.info("  locale set to fr")
+
     def _ensure_dvr(self, ctx, client, kind, name, target, extra):
         api_key = _api_key(target["host"])
         test = client.post(
@@ -121,9 +138,8 @@ class Seerr(Module):
         existing = self._server(client, kind, target["host"])
         if profile is None:
             ctx.log.info(
-                f"  WARNING: profile '{DEFAULT_PROFILE}' not in {name} yet — "
-                f"import+sync it in Profilarr, then re-run 'make bootstrap m=seerr' "
-                f"({name} left unconfigured)"
+                f"  WARNING: profile '{DEFAULT_PROFILE}' not in {name} — "
+                f"{name} left unconfigured"
             )
             return
 

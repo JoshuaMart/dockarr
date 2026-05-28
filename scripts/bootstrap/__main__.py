@@ -24,6 +24,7 @@ def main(argv):
         selected = all_modules
 
     order = resolve_order(selected)
+    prompts.ensure_language(ctx.secrets)
     prompts.ensure_policy(ctx.secrets)
 
     for module in order:

@@ -3,6 +3,27 @@ import sys
 from . import secrets as secretsmod
 
 
+def ensure_language(store):
+    """Ask once whether to localize the stack. 'en' (default) changes nothing;
+    'fr' configures Jellyfin and Seerr in French."""
+    if store.language:
+        return
+
+    if not sys.stdin.isatty():
+        store.set_language("en")
+        print("[bootstrap] non-interactive run: language=en")
+        return
+
+    print("\nLanguage / Langue:")
+    print("  [1] English (default)")
+    print("  [2] Français")
+    choice = ""
+    while choice not in ("1", "2"):
+        choice = input("Choice / Choix [1/2] : ").strip() or "1"
+    store.set_language("fr" if choice == "2" else "en")
+    print(f"  -> {'Français' if choice == '2' else 'English'}\n")
+
+
 def ensure_policy(store):
     """Establish the credential policy once. Interactive on first run;
     falls back to safe defaults when no TTY is attached (automation)."""

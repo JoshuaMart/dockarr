@@ -4,9 +4,11 @@ from urllib.parse import quote
 from ..core.http import ApiClient
 from ..core.registry import Module
 
-UI_CULTURE = "fr-FR"
-METADATA_COUNTRY = "FR"
-METADATA_LANGUAGE = "fr"
+# language -> (UICulture, MetadataCountryCode, PreferredMetadataLanguage)
+LOCALES = {
+    "en": ("en-US", "US", "en"),
+    "fr": ("fr-FR", "FR", "fr"),
+}
 
 # (display name, Jellyfin collectionType, in-container path)
 LIBRARIES = [
@@ -73,16 +75,19 @@ class Jellyfin(Module):
             resp = self._create_admin(client, username, password)
             if resp.status_code not in (200, 204):
                 raise RuntimeError(f"create admin failed: HTTP {resp.status_code}")
+            ui_culture, country, metadata_lang = LOCALES.get(
+                ctx.secrets.language or "en", LOCALES["en"]
+            )
             client.post(
                 "/Startup/Configuration",
                 json={
-                    "UICulture": UI_CULTURE,
-                    "MetadataCountryCode": METADATA_COUNTRY,
-                    "PreferredMetadataLanguage": METADATA_LANGUAGE,
+                    "UICulture": ui_culture,
+                    "MetadataCountryCode": country,
+                    "PreferredMetadataLanguage": metadata_lang,
                 },
             )
             client.post("/Startup/Complete")
-            ctx.log.info(f"  admin '{username}' created, wizard completed ({UI_CULTURE})")
+            ctx.log.info(f"  admin '{username}' created, wizard completed ({ui_culture})")
         elif not ctx.secrets.get("jellyfin"):
             raise RuntimeError(
                 "Jellyfin already set up but credentials unknown — run 'make reset'"
