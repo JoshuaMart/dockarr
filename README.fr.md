@@ -1,18 +1,29 @@
-# Dockarr
+<p align="center">
+  <img width="1500" alt="Dockarr" src="https://github.com/user-attachments/assets/f6920609-f2d1-471a-b5a0-d82b89b8128e" />
+</p>
 
-> Déployer, auto-configurer et maintenir à jour une stack média **\*arr**
-> complète, auto-hébergée, avec Docker Compose.
+<p align="center">
+  <a href="./LICENSE"><img src="https://img.shields.io/badge/License%20MIT-111111?style=for-the-badge&logo=unlicense&logoColor=FFF"></a>
+  <img src="https://img.shields.io/badge/Docker-111111?style=for-the-badge&logo=docker&logoColor=2496ED">
+  <img src="https://img.shields.io/badge/Python-111111?style=for-the-badge&logo=python&logoColor=3776AB">
+</p>
 
-📖 [Documentation](https://JoshuaMart.github.io/dockarr/) · 🇬🇧 [Read in English](README.md)
+<p align="center">
+  Déployer, auto-configurer et maintenir à jour une stack média <strong>*arr</strong> complète, auto-hébergée, avec Docker Compose.
+</p>
 
-Dockarr met en place tout l'écosystème *arr — client torrent, indexeurs, films,
-séries, livres, demandes et serveurs multimédias — derrière un unique reverse
+<p align="center">
+  📖 <a href="https://JoshuaMart.github.io/dockarr/">Documentation</a> · 🇬🇧 <a href="README.md">Read in English</a>
+</p>
+
+Dockarr met en place tout l'écosystème *arr (client torrent, indexeurs, films,
+séries, livres, demandes et serveurs multimédias) derrière un unique reverse
 proxy, et **relie tous les services entre eux pour vous**. Un seul
 `make install` provisionne chaque compte, connecte les apps (client de
 téléchargement, Prowlarr ↔ Radarr/Sonarr, Profilarr, Seerr) et crée les
 bibliothèques. Seul l'ajout de vos propres indexeurs dans Prowlarr reste manuel.
 
-Les mises à jour suivent un flux **GitOps** — les versions des images sont
+Les mises à jour suivent un flux **GitOps** : les versions des images sont
 épinglées dans `docker-compose.yml`,
 [Renovate](https://JoshuaMart.github.io/dockarr/fr/updates/) propose les montées
 de version en pull requests, et le serveur applique les changements fusionnés
@@ -37,35 +48,37 @@ du HTTPS automatique sous `<service>.votredomaine`.
 
 ## Points forts
 
-- **Installation automatisée** — `make install` provisionne et relie chaque
+- **Installation automatisée** : `make install` provisionne et relie chaque
   service sans intervention : identifiants, clients de téléchargement, dossiers
   racines, sync Prowlarr ↔ Radarr/Sonarr et bibliothèques.
-- **Interactif & bilingue** — choisissez le français ou l'anglais au premier
+- **Interactif & bilingue** : choisissez le français ou l'anglais au premier
   lancement ; la langue choisie est appliquée à l'UI de chaque service.
-- **Profils français optionnels** — au choix, remplace la base Profilarr par une
+- **Profils français optionnels** : au choix, remplace la base Profilarr par une
   base FR curatée et pousse ses profils de qualité vers Radarr/Sonarr et Seerr.
-- **HTTPS automatique** — Caddy sert chaque service sous `<service>.votredomaine`
+- **HTTPS automatique** : Caddy sert chaque service sous `<service>.votredomaine`
   avec des certificats Let's Encrypt.
-- **Arborescence compatible hardlinks** — téléchargements et médias partagent un
+- **Arborescence compatible hardlinks** : téléchargements et médias partagent un
   seul arbre, donc les imports sont instantanés et ne consomment pas d'espace.
-- **Mises à jour GitOps** — versions épinglées, pull requests Renovate, déploiement
+- **Mises à jour GitOps** : versions épinglées, pull requests Renovate, déploiement
   en une commande, et rollback instantané avec `git revert`.
 
 ## Démarrage rapide
 
 Prérequis : un hôte Linux avec [Docker Engine](https://docs.docker.com/engine/install/)
-et le plugin Compose, ainsi que `git` et `make`.
+et le plugin Compose, ainsi que `git`, `make` et Python 3.9+ avec le module
+`venv` (sur Debian/Ubuntu : `apt install python3-venv`).
 
 ```bash
 git clone https://github.com/JoshuaMart/dockarr.git
 cd dockarr
+cp .env.example .env
+# éditez .env (domaine, fuseau horaire, etc.), puis :
 make install
 ```
 
-`make install` crée `.env` (éditez-le, puis relancez la commande), construit
-l'arborescence des médias, démarre la stack et lance le bootstrap interactif qui
-configure chaque service. Les identifiants générés sont enregistrés dans
-`secrets/credentials.json` — affichez-les avec `make creds`.
+`make install` construit l'arborescence des médias, démarre la stack et lance le
+bootstrap interactif qui configure chaque service. Les identifiants générés sont
+enregistrés dans `secrets/credentials.json` ; affichez-les avec `make creds`.
 
 ## Commandes courantes
 
@@ -86,7 +99,7 @@ re-provisionner un seul service.
 
 Les guides complets sont sur **<https://JoshuaMart.github.io/dockarr/fr/>** :
 
-- [Installation](https://JoshuaMart.github.io/dockarr/fr/installation/) — prérequis et premier lancement
-- [Configuration](https://JoshuaMart.github.io/dockarr/fr/configuration/) — services, reverse proxy et HTTPS
-- [Mises à jour](https://JoshuaMart.github.io/dockarr/fr/updates/) — le workflow GitOps / Renovate
-- [VPN](https://JoshuaMart.github.io/dockarr/fr/vpn/) — faire passer qBittorrent par Gluetun
+- [Installation](https://JoshuaMart.github.io/dockarr/fr/installation/) : prérequis et premier lancement
+- [Configuration](https://JoshuaMart.github.io/dockarr/fr/configuration/) : services, reverse proxy et HTTPS
+- [Mises à jour](https://JoshuaMart.github.io/dockarr/fr/updates/) : le workflow GitOps / Renovate
+- [VPN](https://JoshuaMart.github.io/dockarr/fr/vpn/) : faire passer qBittorrent par Gluetun

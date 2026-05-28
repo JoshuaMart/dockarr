@@ -1,4 +1,6 @@
-# Dockarr
+<p align="center">
+  <img alt="Dockarr" src="assets/banner.png" />
+</p>
 
 **Dockarr** déploie, configure, pilote et maintient à jour une stack média
 **\*arr** complète, auto-hébergée, avec Docker Compose.
@@ -24,8 +26,8 @@ derrière du HTTPS automatique sous `<service>.votredomaine`.
 
 Le **dépôt Git est la source de vérité**. Les versions des images sont
 épinglées dans `docker-compose.yml`. [Renovate](updates.md) ouvre une pull
-request dès qu'une nouvelle version est disponible — vous validez et fusionnez
-ce que vous voulez — et le VPS récupère le changement avec un simple
+request dès qu'une nouvelle version est disponible. Vous validez et fusionnez
+ce que vous voulez, et le VPS récupère le changement avec un simple
 `make update`.
 
 ```mermaid
@@ -37,7 +39,7 @@ graph LR
 
 ## Étapes suivantes
 
-- [Installation](installation.md) — démarrer la stack
-- [Configuration](configuration.md) — relier les services entre eux
-- [Mises à jour](updates.md) — le workflow de mise à jour GitOps
-- [VPN](vpn.md) — faire passer qBittorrent par Gluetun
+- [Installation](installation.md) : démarrer la stack
+- [Configuration](configuration.md) : relier les services entre eux
+- [Mises à jour](updates.md) : le workflow de mise à jour GitOps
+- [VPN](vpn.md) : faire passer qBittorrent par Gluetun
