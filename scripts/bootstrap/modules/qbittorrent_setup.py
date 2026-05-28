@@ -10,6 +10,15 @@ CATEGORIES = {
     "radarr": "/data/torrents/movies",
     "sonarr": "/data/torrents/tv",
 }
+# Automatic TMM is what actually routes downloads into the category subfolders;
+# the relocate flags keep existing torrents in sync when paths change.
+PREFERENCES = {
+    "save_path": SAVE_PATH,
+    "auto_tmm_enabled": True,
+    "torrent_changed_tmm_enabled": True,
+    "save_path_changed_tmm_enabled": True,
+    "category_changed_tmm_enabled": True,
+}
 
 
 class QbittorrentSetup(Module):
@@ -32,7 +41,7 @@ class QbittorrentSetup(Module):
         if client is None:
             return False
         prefs = client.get("/api/v2/app/preferences").json()
-        if prefs.get("save_path") != SAVE_PATH:
+        if any(prefs.get(key) != value for key, value in PREFERENCES.items()):
             return False
         categories = client.get("/api/v2/torrents/categories").json()
         return all(name in categories for name in CATEGORIES)
@@ -44,9 +53,9 @@ class QbittorrentSetup(Module):
 
         client.post(
             "/api/v2/app/setPreferences",
-            data={"json": json.dumps({"save_path": SAVE_PATH})},
+            data={"json": json.dumps(PREFERENCES)},
         )
-        ctx.log.info(f"  default save path set to {SAVE_PATH}")
+        ctx.log.info(f"  save path {SAVE_PATH} + Automatic TMM enabled")
 
         existing = client.get("/api/v2/torrents/categories").json()
         for name, path in CATEGORIES.items():
