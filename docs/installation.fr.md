@@ -5,22 +5,28 @@
 - Un hôte Linux (VPS ou serveur maison) avec [Docker Engine](https://docs.docker.com/engine/install/)
   et le plugin Docker Compose.
 - `git` et `make`.
+- Python 3.9+ avec le module `venv` (sur Debian/Ubuntu : `apt install python3-venv`)
+  (`make install` construit un virtualenv isolé pour lancer le bootstrap).
 
 ## Démarrage rapide
 
 ```bash
 git clone https://github.com/JoshuaMart/dockarr.git
 cd dockarr
+cp .env.example .env
+# éditez .env (domaine, fuseau horaire, etc.), puis :
 make install
 ```
 
-`make install` :
+`make install` enchaîne ensuite :
 
-1. Crée `.env` à partir de `.env.example` (éditez-le, puis relancez la commande).
-2. Crée l'arborescence des médias sous `data/`.
-3. Démarre tous les services en arrière-plan (`make up`).
-4. Lance le **bootstrap** (`make bootstrap`), qui provisionne et relie tous les
-   services pour vous — voir [Configuration](configuration.md) pour le détail.
+1. Crée l'arborescence des médias sous `data/`.
+2. Démarre tous les services en arrière-plan (`make up`).
+3. Lance le **bootstrap** (`make bootstrap`), qui provisionne et relie tous les
+   services pour vous. Voir [Configuration](configuration.md) pour le détail.
+
+(Si vous sautez l'étape `cp`, le premier `make install` crée seulement `.env`
+puis s'arrête pour que vous l'éditiez ; relancez `make install` ensuite.)
 
 ## Questions au premier lancement
 
@@ -58,12 +64,12 @@ make creds
 | `DOCKARR_DATA` | Arbre partagé téléchargements + médias (défaut `./data`). |
 | `DOCKARR_DOMAIN` | Domaine de base pour le reverse proxy. |
 | `CADDY_EMAIL` | Email pour les certificats Let's Encrypt. |
-| `KAVITA_PORT` | Port hôte de Kavita (mettez `5001` sur macOS — AirPlay occupe `:5000`). |
+| `KAVITA_PORT` | Port hôte de Kavita (mettez `5001` sur macOS, où AirPlay occupe `:5000`). |
 
 !!! tip "Hardlinks"
     Gardez téléchargements et médias sous le **même** arbre `DOCKARR_DATA`
     (`/data/torrents` et `/data/media`). Radarr/Sonarr peuvent ainsi déplacer
-    les fichiers par hardlink au lieu de les copier — instantané et sans
+    les fichiers par hardlink au lieu de les copier : instantané et sans
     espace disque supplémentaire.
 
 ## Commandes du quotidien
@@ -86,5 +92,5 @@ déjà configuré.
 
 L'accès direct par port (ex. `http://IP_SERVEUR:7878` pour Radarr) fonctionne
 immédiatement. Pour de belles URLs HTTPS (`radarr.votredomaine`), pointez un
-enregistrement DNS wildcard vers l'hôte et renseignez `DOCKARR_DOMAIN` — voir
+enregistrement DNS wildcard vers l'hôte et renseignez `DOCKARR_DOMAIN` ; voir
 [Configuration](configuration.md).

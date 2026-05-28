@@ -15,7 +15,7 @@ help: ## Show this help
 		| awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-12s\033[0m %s\n", $$1, $$2}'
 
 install: ## First-time setup: create .env, data folders, start the stack, provision
-	@test -f .env || (cp .env.example .env && echo "Created .env — edit it then re-run 'make install'")
+	@test -f .env || (cp .env.example .env; echo "Created .env, edit it then re-run 'make install'"; exit 1)
 	@mkdir -p data/torrents/movies data/torrents/tv data/torrents/books \
 		data/media/movies data/media/tv \
 		data/media/books/manga data/media/books/comics data/media/books/bd \
