@@ -17,6 +17,7 @@ def load_modules():
         jellyfin,
         kavita,
         profilarr,
+        profilarr_fr,
         profilarr_targets,
         prowlarr_apps,
         qbittorrent,
@@ -42,6 +43,7 @@ def load_modules():
         arr_setup.SONARR_SETUP,
         prowlarr_apps.MODULE,
         profilarr_targets.MODULE,
+        profilarr_fr.MODULE,
         seerr.MODULE,
     ]
 

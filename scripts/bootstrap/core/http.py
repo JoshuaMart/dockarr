@@ -26,6 +26,10 @@ class ApiClient:
         kwargs.setdefault("timeout", self.timeout)
         return self.session.put(self._url(path), **kwargs)
 
+    def delete(self, path, **kwargs):
+        kwargs.setdefault("timeout", self.timeout)
+        return self.session.delete(self._url(path), **kwargs)
+
     def wait_until_up(self, path="/", timeout=180, interval=2):
         """Block until the endpoint answers with a non-5xx status."""
         deadline = time.time() + timeout

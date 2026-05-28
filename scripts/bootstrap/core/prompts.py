@@ -24,6 +24,41 @@ def ensure_language(store):
     print(f"  -> {'Français' if choice == '2' else 'English'}\n")
 
 
+DEFAULT_FR_PROFILE = "1080p Efficient FR"
+
+
+def ensure_profilarr_fr(store):
+    """Ask once whether to auto-configure Profilarr with the French regex
+    database. If enabled, the profilarr-fr module wipes Profilarr's database,
+    clones the French DB and pushes the chosen profile to Radarr/Sonarr."""
+    if store.profilarr_fr is not None:
+        return
+
+    if not sys.stdin.isatty():
+        store.set_profilarr_fr(False)
+        print("[bootstrap] non-interactive run: Profilarr FR auto-config disabled")
+        return
+
+    print("\nProfilarr — auto-configuration française:")
+    print("  Remplace la base Profilarr par la base FR (custom formats + profils")
+    print("  optimisés pour le contenu francophone) puis l'applique à Radarr/Sonarr.")
+    print("  ATTENTION: supprime la base de données Profilarr existante.")
+    choice = None
+    while choice not in ("o", "n", "y"):
+        choice = input("Activer l'auto-config FR ? [o/N] : ").strip().lower() or "n"
+
+    if choice in ("o", "y"):
+        profile = (
+            input(f"Profil par défaut [{DEFAULT_FR_PROFILE}] : ").strip()
+            or DEFAULT_FR_PROFILE
+        )
+        store.set_profilarr_fr(True, profile)
+        print(f"  -> auto-config FR activée (profil : {profile})\n")
+    else:
+        store.set_profilarr_fr(False)
+        print("  -> auto-config FR désactivée\n")
+
+
 def ensure_policy(store):
     """Establish the credential policy once. Interactive on first run;
     falls back to safe defaults when no TTY is attached (automation)."""

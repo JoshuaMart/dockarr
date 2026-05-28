@@ -26,6 +26,7 @@ def main(argv):
     order = resolve_order(selected)
     prompts.ensure_language(ctx.secrets)
     prompts.ensure_policy(ctx.secrets)
+    prompts.ensure_profilarr_fr(ctx.secrets)
 
     for module in order:
         try:

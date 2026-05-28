@@ -1,3 +1,5 @@
+import time
+
 from ..core.http import ApiClient
 from ..core.registry import Module
 from .servarr import _api_key
@@ -6,9 +8,9 @@ from .servarr import _api_key
 JELLYFIN_HOST = "jellyfin"
 JELLYFIN_PORT = 8096
 
-# "Any" is a Radarr/Sonarr built-in, so it always exists (no Profilarr
-# dependency). Change later to a curated profile name if desired.
-DEFAULT_PROFILE = "Any"
+# "Any" is a Radarr/Sonarr built-in fallback. When the Profilarr FR auto-config
+# is enabled it instead uses the chosen curated profile (synced by profilarr-fr).
+FALLBACK_PROFILE = "Any"
 RADARR = {"host": "radarr", "port": 7878, "root": "/data/media/movies"}
 SONARR = {"host": "sonarr", "port": 8989, "root": "/data/media/tv"}
 
@@ -26,10 +28,16 @@ class Seerr(Module):
     French locale when the stack language is 'fr'."""
 
     name = "seerr"
-    depends = ("jellyfin", "radarr", "sonarr")
+    depends = ("jellyfin", "radarr", "sonarr", "profilarr-fr")
 
     def _client(self, ctx):
         return ApiClient(ctx.config.service_url("seerr"))
+
+    def _default_profile(self, ctx):
+        cfg = ctx.secrets.profilarr_fr or {}
+        if cfg.get("enabled") and cfg.get("profile"):
+            return cfg["profile"]
+        return FALLBACK_PROFILE
 
     def _initialized(self, client):
         resp = client.get("/api/v1/settings/public")
@@ -82,11 +90,12 @@ class Seerr(Module):
             return False
         if not self._auth(ctx, client):
             return False
+        profile = self._default_profile(ctx)
         radarr = self._server(client, "radarr", RADARR["host"])
         sonarr = self._server(client, "sonarr", SONARR["host"])
         if not (
-            radarr and radarr.get("activeProfileName") == DEFAULT_PROFILE
-            and sonarr and sonarr.get("activeProfileName") == DEFAULT_PROFILE
+            radarr and radarr.get("activeProfileName") == profile
+            and sonarr and sonarr.get("activeProfileName") == profile
         ):
             return False
         return self._locale_ok(ctx, client)
@@ -123,22 +132,32 @@ class Seerr(Module):
         if resp.status_code in (200, 201):
             ctx.log.info("  locale set to fr")
 
-    def _ensure_dvr(self, ctx, client, kind, name, target, extra):
-        api_key = _api_key(target["host"])
+    def _test_dvr(self, client, kind, target, api_key):
         test = client.post(
             f"/api/v1/settings/{kind}/test",
             json={"hostname": target["host"], "port": target["port"],
                   "apiKey": api_key, "useSsl": False, "baseUrl": ""},
         )
         if test.status_code != 200:
-            raise RuntimeError(f"{name} test failed: HTTP {test.status_code} {test.text[:200]}")
-        data = test.json()
+            raise RuntimeError(f"test failed: HTTP {test.status_code} {test.text[:200]}")
+        return test.json()
 
-        profile = _pick(data.get("profiles", []), "name", DEFAULT_PROFILE)
+    def _ensure_dvr(self, ctx, client, kind, name, target, extra):
+        api_key = _api_key(target["host"])
+        profile_name = self._default_profile(ctx)
+        # A profile just synced by profilarr-fr can take a moment to surface
+        # through Seerr's test, so retry until it appears.
+        for _ in range(5):
+            data = self._test_dvr(client, kind, target, api_key)
+            profile = _pick(data.get("profiles", []), "name", profile_name)
+            if profile is not None:
+                break
+            time.sleep(2)
+
         existing = self._server(client, kind, target["host"])
         if profile is None:
             ctx.log.info(
-                f"  WARNING: profile '{DEFAULT_PROFILE}' not in {name} — "
+                f"  WARNING: profile '{profile_name}' not in {name} — "
                 f"{name} left unconfigured"
             )
             return

@@ -40,6 +40,14 @@ class SecretStore:
         self.data["_language"] = language
         self.save()
 
+    @property
+    def profilarr_fr(self):
+        return self.data.get("_profilarr_fr")
+
+    def set_profilarr_fr(self, enabled, profile=None):
+        self.data["_profilarr_fr"] = {"enabled": enabled, "profile": profile}
+        self.save()
+
     def set_policy(self, username, password_mode, shared_password=None):
         self.data["_policy"] = {
             "username": username,
