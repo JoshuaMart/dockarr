@@ -22,7 +22,7 @@ how to expose everything behind HTTPS.
 | **Jellyfin** | Admin + setup wizard, `Movies` and `TV Shows` libraries. |
 | **Kavita** | Admin, `Manga` / `Comics` / `BD` / `Livres` libraries (unless disabled at first run). |
 
-Re-run any single service with `make bootstrap m=<service>` — it is idempotent.
+Re-run any single service with `make bootstrap m=<service>`; it is idempotent.
 
 ## The one manual step: indexers
 
@@ -34,7 +34,7 @@ for you (those are personal to your trackers). To finish:
 2. **Settings → Indexers → Add indexer** and add your trackers.
 
 Because Radarr and Sonarr are already registered as Prowlarr applications
-(`fullSync`), every indexer you add is pushed to them automatically — nothing
+(`fullSync`), every indexer you add is pushed to them automatically, with nothing
 else to configure.
 
 ## Quality profiles (Profilarr FR)
@@ -49,7 +49,7 @@ yourself in Profilarr (`:6868`).
 
 Services reach each other over the internal `dockarr` Docker network by
 container name. If you wire anything by hand, always use `http://<service>:<port>`
-(e.g. `http://radarr:7878`) — never `localhost`.
+(e.g. `http://radarr:7878`), never `localhost`.
 
 ## Reverse proxy (Caddy)
 
@@ -79,7 +79,7 @@ each service over HTTPS.
 
 !!! note "Local use"
     With the default `DOCKARR_DOMAIN=dockarr.local` Caddy issues a self-signed
-    certificate, so browsers warn about it — that is expected for local-only
+    certificate, so browsers warn about it; that is expected for local-only
     use. Either accept the warning, or just use direct port access
     (`http://SERVER_IP:<port>`).
 

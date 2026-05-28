@@ -23,7 +23,7 @@ comment tout exposer en HTTPS.
 | **Jellyfin** | Admin + assistant de configuration, bibliothèques `Movies` et `TV Shows`. |
 | **Kavita** | Admin, bibliothèques `Manga` / `Comics` / `BD` / `Livres` (sauf si désactivé au premier lancement). |
 
-Re-jouez un service avec `make bootstrap m=<service>` — c'est idempotent.
+Re-jouez un service avec `make bootstrap m=<service>` ; c'est idempotent.
 
 ## La seule étape manuelle : les indexeurs
 
@@ -35,7 +35,7 @@ indexeurs à votre place (ils sont propres à vos trackers). Pour terminer :
 2. **Settings → Indexers → Add indexer** et ajoutez vos trackers.
 
 Comme Radarr et Sonarr sont déjà enregistrés comme applications Prowlarr
-(`fullSync`), chaque indexeur ajouté leur est poussé automatiquement — rien
+(`fullSync`), chaque indexeur ajouté leur est poussé automatiquement, sans rien
 d'autre à configurer.
 
 ## Profils de qualité (Profilarr FR)
@@ -50,7 +50,7 @@ curer vos profils vous-même dans Profilarr (`:6868`).
 
 Les services communiquent entre eux via le réseau Docker interne `dockarr` par
 nom de conteneur. Si vous câblez quelque chose à la main, utilisez toujours
-`http://<service>:<port>` (ex. `http://radarr:7878`) — jamais `localhost`.
+`http://<service>:<port>` (ex. `http://radarr:7878`), jamais `localhost`.
 
 ## Reverse proxy (Caddy)
 
@@ -82,8 +82,8 @@ sert chaque service en HTTPS.
 
 !!! note "Usage local"
     Avec la valeur par défaut `DOCKARR_DOMAIN=dockarr.local`, Caddy émet un
-    certificat auto-signé : le navigateur affiche donc un avertissement — c'est
-    normal pour un usage purement local. Acceptez l'avertissement, ou utilisez
+    certificat auto-signé : le navigateur affiche donc un avertissement, normal
+    pour un usage purement local. Acceptez l'avertissement, ou utilisez
     simplement l'accès direct par port (`http://IP_SERVEUR:<port>`).
 
 Ajoutez ou retirez des routes en éditant `caddy/Caddyfile`, puis `make restart`.

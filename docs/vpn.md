@@ -3,11 +3,10 @@
 You can route **qBittorrent** through a VPN so all torrent traffic is tunnelled.
 Dockarr uses [Gluetun](https://github.com/qdm12/gluetun) for this.
 
-!!! warning "Gluetun needs a real VPN provider"
-    Gluetun **is a VPN client** — there is no "transparent / no-VPN" mode. It
-    must connect to a provider (WireGuard or OpenVPN). Without credentials it
-    will not establish a tunnel, and its kill-switch will block qBittorrent's
-    traffic. Only enable this once you have a VPN subscription.
+!!! warning "Gluetun requires a VPN subscription"
+    Gluetun connects to a VPN provider (WireGuard or OpenVPN). Without
+    credentials it can't establish a tunnel, and its kill-switch blocks all of
+    qBittorrent's traffic. Only enable this once you have a VPN subscription.
 
 ## Enable it
 
@@ -48,7 +47,7 @@ Dockarr uses [Gluetun](https://github.com/qdm12/gluetun) for this.
    ```
 
    qBittorrent's ports are already declared on the `gluetun` service, so its
-   WebUI stays reachable on the same port — but now through the tunnel.
+   WebUI stays reachable on the same port, but now through the tunnel.
 
 4. Apply:
 
@@ -63,5 +62,5 @@ docker exec gluetun wget -qO- https://ipinfo.io/ip   # should show the VPN IP
 docker exec qbittorrent curl -s https://ipinfo.io/ip # same VPN IP
 ```
 
-If Gluetun is down, qBittorrent has **no** internet access — that is the
+If Gluetun is down, qBittorrent has **no** internet access; that is the
 kill-switch working as intended.
