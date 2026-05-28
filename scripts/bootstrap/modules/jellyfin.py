@@ -101,17 +101,16 @@ class Jellyfin(Module):
         self._ensure_libraries(ctx, token)
 
     def _create_admin(self, client, username, password):
-        # On a fresh boot the first user is initialised asynchronously, so
-        # /Startup/User can briefly 404 until it exists.
-        resp = None
+        # Jellyfin 10.11 no longer auto-creates the first user on boot. The
+        # default admin row is provisioned lazily by GET /Startup/User; without
+        # it POST /Startup/User has nothing to update and returns 404.
         for _ in range(5):
-            resp = client.post(
-                "/Startup/User", json={"Name": username, "Password": password}
-            )
-            if resp.status_code != 404:
-                return resp
+            if client.get("/Startup/User").ok:
+                break
             time.sleep(2)
-        return resp
+        return client.post(
+            "/Startup/User", json={"Name": username, "Password": password}
+        )
 
     def _ensure_libraries(self, ctx, token):
         client = _client(ctx, token)
