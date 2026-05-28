@@ -21,6 +21,7 @@ def load_modules():
         qbittorrent,
         qbittorrent_setup,
         qui,
+        qui_arr,
         servarr,
     )
 
@@ -28,6 +29,7 @@ def load_modules():
         qbittorrent.MODULE,
         qbittorrent_setup.MODULE,
         qui.MODULE,
+        qui_arr.MODULE,
         servarr.RADARR,
         servarr.SONARR,
         servarr.PROWLARR,

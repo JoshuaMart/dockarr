@@ -4,34 +4,36 @@ from ..core.registry import Module
 QBITTORRENT_HOST = "http://qbittorrent:8080"
 
 
+def _client(ctx):
+    return ApiClient(ctx.config.service_url("qui"))
+
+
+def _login(client, username, password):
+    client.session.cookies.clear()
+    resp = client.post(
+        "/api/auth/login",
+        json={"username": username, "password": password, "remember_me": True},
+    )
+    return resp.status_code == 200
+
+
 class Qui(Module):
     name = "qui"
     depends = ("qbittorrent",)
-
-    def _client(self, ctx):
-        return ApiClient(ctx.config.service_url("qui"))
-
-    def _login(self, client, username, password):
-        client.session.cookies.clear()
-        resp = client.post(
-            "/api/auth/login",
-            json={"username": username, "password": password, "remember_me": True},
-        )
-        return resp.status_code == 200
 
     def is_done(self, ctx):
         creds = ctx.secrets.get("qui")
         if not creds:
             return False
-        client = self._client(ctx)
+        client = _client(ctx)
         try:
             client.wait_until_up("/", timeout=10)
         except TimeoutError:
             return False
-        return self._login(client, creds["username"], creds["password"])
+        return _login(client, creds["username"], creds["password"])
 
     def run(self, ctx):
-        client = self._client(ctx)
+        client = _client(ctx)
         client.wait_until_up("/")
 
         username, password = ctx.secrets.create("qui")
@@ -41,7 +43,7 @@ class Qui(Module):
         if resp.status_code == 201:
             ctx.log.info(f"  admin account '{username}' created")
         elif resp.status_code == 400 and "already" in resp.text.lower():
-            if not self._login(client, username, password):
+            if not _login(client, username, password):
                 raise RuntimeError(
                     "qui already set up but stored credentials are unknown — "
                     "run 'make reset' to start clean"
