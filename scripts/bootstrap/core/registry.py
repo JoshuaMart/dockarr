@@ -16,6 +16,7 @@ def load_modules():
         arr_setup,
         kavita,
         profilarr,
+        profilarr_targets,
         prowlarr_apps,
         qbittorrent,
         qbittorrent_setup,
@@ -35,6 +36,7 @@ def load_modules():
         arr_setup.RADARR_SETUP,
         arr_setup.SONARR_SETUP,
         prowlarr_apps.MODULE,
+        profilarr_targets.MODULE,
     ]
 
 
