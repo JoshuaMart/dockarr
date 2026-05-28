@@ -1,0 +1,36 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":dependencyDashboard",
+    ":semanticCommits"
+  ],
+  "timezone": "Europe/Paris",
+  "schedule": ["* 0-6 * * 1"],
+  "docker-compose": {
+    "managerFilePatterns": ["/(^|/)docker-compose[^/]*\\.ya?ml$/"]
+  },
+  "packageRules": [
+    {
+      "description": "Pin floating tags (latest) to a digest for reproducibility",
+      "matchManagers": ["docker-compose", "dockerfile"],
+      "pinDigests": true
+    },
+    {
+      "description": "Group all *arr stack image updates into a single PR",
+      "matchManagers": ["docker-compose"],
+      "groupName": "dockarr images"
+    },
+    {
+      "description": "Never auto-merge — you review every PR",
+      "matchManagers": ["docker-compose"],
+      "automerge": false
+    },
+    {
+      "description": "Require manual review for major version bumps (e.g. Jellyfin)",
+      "matchManagers": ["docker-compose"],
+      "matchUpdateTypes": ["major"],
+      "addLabels": ["major-update"]
+    }
+  ]
+}

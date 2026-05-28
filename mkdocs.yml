@@ -1,0 +1,65 @@
+site_name: Dockarr
+site_description: Deploy, configure, pilot and update a self-hosted *arr media stack
+site_url: https://JoshuaMart.github.io/dockarr/
+repo_url: https://github.com/JoshuaMart/dockarr
+repo_name: JoshuaMart/dockarr
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+    - search.highlight
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - toc:
+      permalink: true
+
+plugins:
+  - search
+  - i18n:
+      docs_structure: suffix
+      languages:
+        - locale: en
+          default: true
+          name: English
+          build: true
+        - locale: fr
+          name: Français
+          build: true
+          nav_translations:
+            Home: Accueil
+            Installation: Installation
+            Configuration: Configuration
+            Services: Services
+            Updates: Mises à jour
+            VPN: VPN
+
+nav:
+  - Home: index.md
+  - Installation: installation.md
+  - Configuration: configuration.md
+  - Services: services.md
+  - Updates: updates.md
+  - VPN: vpn.md

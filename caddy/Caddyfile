@@ -1,0 +1,44 @@
+{
+	email {$CADDY_EMAIL}
+}
+
+# Each service is reached through the internal Docker network by container name.
+# With a real DNS domain pointing at this host, Caddy provisions HTTPS certs
+# automatically. For local-only use (dockarr.local), browsers will warn about
+# the self-signed cert — that is expected.
+
+qbittorrent.{$DOCKARR_DOMAIN} {
+	reverse_proxy qbittorrent:8080
+}
+
+qui.{$DOCKARR_DOMAIN} {
+	reverse_proxy qui:7476
+}
+
+prowlarr.{$DOCKARR_DOMAIN} {
+	reverse_proxy prowlarr:9696
+}
+
+radarr.{$DOCKARR_DOMAIN} {
+	reverse_proxy radarr:7878
+}
+
+sonarr.{$DOCKARR_DOMAIN} {
+	reverse_proxy sonarr:8989
+}
+
+profilarr.{$DOCKARR_DOMAIN} {
+	reverse_proxy profilarr:6868
+}
+
+seerr.{$DOCKARR_DOMAIN} {
+	reverse_proxy seerr:5055
+}
+
+jellyfin.{$DOCKARR_DOMAIN} {
+	reverse_proxy jellyfin:8096
+}
+
+kavita.{$DOCKARR_DOMAIN} {
+	reverse_proxy kavita:5000
+}

@@ -1,0 +1,21 @@
+# Secrets & local env
+.env
+
+# Persisted service configuration (mounted into containers)
+config/*
+!config/.gitkeep
+
+# Media library & downloads
+data/
+
+# Caddy runtime data
+caddy/data/
+caddy/config/
+
+# OS / editor noise
+.DS_Store
+*.swp
+
+# MkDocs build output
+site/
+.cache/

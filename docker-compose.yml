@@ -1,0 +1,171 @@
+# ============================================================================
+# Dockarr — *arr media stack
+# Pinned image versions are the source of truth. Update them via Renovate PRs
+# (see renovate.json) then deploy with `make update`.
+# ============================================================================
+
+x-common: &common
+  restart: unless-stopped
+  environment: &common-env
+    PUID: ${PUID:-1000}
+    PGID: ${PGID:-1000}
+    TZ: ${TZ:-Etc/UTC}
+  networks:
+    - dockarr
+
+services:
+  # --- Reverse proxy --------------------------------------------------------
+  caddy:
+    <<: *common
+    image: caddy:2-alpine
+    container_name: caddy
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      DOCKARR_DOMAIN: ${DOCKARR_DOMAIN:-dockarr.local}
+      CADDY_EMAIL: ${CADDY_EMAIL}
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./caddy/data:/data
+      - ./caddy/config:/config
+
+  # --- Download client ------------------------------------------------------
+  qbittorrent:
+    <<: *common
+    image: lscr.io/linuxserver/qbittorrent:5.2.1
+    container_name: qbittorrent
+    environment:
+      <<: *common-env
+      WEBUI_PORT: ${QBITTORRENT_WEBUI_PORT:-8080}
+    volumes:
+      - ${DOCKARR_CONFIG}/qbittorrent:/config
+      - ${DOCKARR_DATA}:/data
+    ports:
+      - "${QBITTORRENT_WEBUI_PORT:-8080}:${QBITTORRENT_WEBUI_PORT:-8080}"
+      - "6881:6881"
+      - "6881:6881/udp"
+
+  # Modern web UI for qBittorrent (autobrr/qui)
+  qui:
+    <<: *common
+    image: ghcr.io/autobrr/qui:latest
+    container_name: qui
+    volumes:
+      - ${DOCKARR_CONFIG}/qui:/config
+    ports:
+      - "7476:7476"
+
+  # --- Indexers -------------------------------------------------------------
+  prowlarr:
+    <<: *common
+    image: lscr.io/linuxserver/prowlarr:2.3.5
+    container_name: prowlarr
+    volumes:
+      - ${DOCKARR_CONFIG}/prowlarr:/config
+    ports:
+      - "9696:9696"
+
+  # --- Movies ---------------------------------------------------------------
+  radarr:
+    <<: *common
+    image: lscr.io/linuxserver/radarr:6.1.1
+    container_name: radarr
+    volumes:
+      - ${DOCKARR_CONFIG}/radarr:/config
+      - ${DOCKARR_DATA}:/data
+    ports:
+      - "7878:7878"
+
+  # --- TV shows -------------------------------------------------------------
+  sonarr:
+    <<: *common
+    image: lscr.io/linuxserver/sonarr:4.0.17
+    container_name: sonarr
+    volumes:
+      - ${DOCKARR_CONFIG}/sonarr:/config
+      - ${DOCKARR_DATA}:/data
+    ports:
+      - "8989:8989"
+
+  # --- Quality profiles / custom formats sync -------------------------------
+  profilarr:
+    <<: *common
+    image: ghcr.io/dictionarry-hub/profilarr:latest
+    container_name: profilarr
+    volumes:
+      - ${DOCKARR_CONFIG}/profilarr:/config
+    ports:
+      - "6868:6868"
+
+  # --- Requests -------------------------------------------------------------
+  seerr:
+    <<: *common
+    image: ghcr.io/seerr-team/seerr:latest
+    container_name: seerr
+    volumes:
+      - ${DOCKARR_CONFIG}/seerr:/app/config
+    ports:
+      - "5055:5055"
+
+  # --- Media server (video) -------------------------------------------------
+  jellyfin:
+    <<: *common
+    image: lscr.io/linuxserver/jellyfin:10.11.10
+    container_name: jellyfin
+    volumes:
+      - ${DOCKARR_CONFIG}/jellyfin:/config
+      - ${DOCKARR_DATA}/media:/media:ro
+    ports:
+      - "8096:8096"
+      - "7359:7359/udp" # client auto-discovery
+      - "1900:1900/udp" # DLNA
+
+  # --- Media server (books / comics / manga) --------------------------------
+  kavita:
+    <<: *common
+    image: lscr.io/linuxserver/kavita:0.9.0
+    container_name: kavita
+    volumes:
+      - ${DOCKARR_CONFIG}/kavita:/config
+      - ${DOCKARR_DATA}/media/books:/books
+    ports:
+      - "5000:5000"
+
+  # ==========================================================================
+  # OPTIONAL — route qBittorrent through a VPN (Gluetun).
+  # Gluetun is a VPN CLIENT: it needs a real provider (WireGuard/OpenVPN) and
+  # will NOT run "transparently" without one. To enable:
+  #   1. Fill the VPN_* / WIREGUARD_* vars in .env
+  #   2. Uncomment the gluetun service below
+  #   3. On the qbittorrent service: remove its `ports:` and `networks:`,
+  #      then add `network_mode: "service:gluetun"`
+  #   4. Move qBittorrent's port mappings up into gluetun's `ports:`
+  # See docs/vpn for the full step-by-step.
+  # --------------------------------------------------------------------------
+  # gluetun:
+  #   image: qmcgaw/gluetun:latest
+  #   container_name: gluetun
+  #   cap_add:
+  #     - NET_ADMIN
+  #   devices:
+  #     - /dev/net/tun:/dev/net/tun
+  #   environment:
+  #     VPN_SERVICE_PROVIDER: ${VPN_SERVICE_PROVIDER}
+  #     VPN_TYPE: ${VPN_TYPE:-wireguard}
+  #     WIREGUARD_PRIVATE_KEY: ${WIREGUARD_PRIVATE_KEY}
+  #     WIREGUARD_ADDRESSES: ${WIREGUARD_ADDRESSES}
+  #     SERVER_COUNTRIES: ${SERVER_COUNTRIES}
+  #     TZ: ${TZ:-Etc/UTC}
+  #   ports:
+  #     - "${QBITTORRENT_WEBUI_PORT:-8080}:${QBITTORRENT_WEBUI_PORT:-8080}"
+  #     - "6881:6881"
+  #     - "6881:6881/udp"
+  #   restart: unless-stopped
+  #   networks:
+  #     - dockarr
+
+networks:
+  dockarr:
+    name: dockarr
