@@ -1,5 +1,6 @@
 # Secrets & local env
 .env
+secrets/
 
 # Persisted service configuration (mounted into containers)
 config/*
@@ -19,3 +20,9 @@ caddy/config/
 # MkDocs build output
 site/
 .cache/
+.venv/
+venv/
+
+# Python
+__pycache__/
+*.pyc

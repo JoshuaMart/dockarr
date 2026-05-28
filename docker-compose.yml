@@ -131,7 +131,7 @@ services:
       - ${DOCKARR_CONFIG}/kavita:/config
       - ${DOCKARR_DATA}/media/books:/books
     ports:
-      - "5000:5000"
+      - "${KAVITA_PORT:-5000}:5000"
 
   # ==========================================================================
   # OPTIONAL — route qBittorrent through a VPN (Gluetun).
