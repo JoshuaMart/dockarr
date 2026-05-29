@@ -38,11 +38,13 @@ and never asked again):
 | **Language / Langue** | UI language applied to every service: English or Français. |
 | **Service username** | A shared username for all services (blank = random). |
 | **Password mode** | One shared random password, or a different one per service. |
-| **Kavita** | Keep the books/comics/manga server, or stop it. |
+| **Kavita** | Keep the books/comics/manga server, or stop it. A disabled Kavita stays stopped across `make up` and `make update` (the choice is remembered automatically). |
+| **VPN (Gluetun)** | Route qBittorrent through a WireGuard VPN. If enabled, you're asked for the provider and WireGuard credentials. See [VPN](vpn.md). |
 | **Profilarr FR** | Optionally wipe the Profilarr database, clone a curated French one and push a quality profile to Radarr/Sonarr. |
 
 On a non-interactive run (no TTY) the safe defaults are used: English, a random
-username, a per-service password, Kavita enabled, Profilarr FR disabled.
+username, a per-service password, Kavita enabled, VPN disabled, Profilarr FR
+disabled.
 
 ## Credentials
 
@@ -64,6 +66,12 @@ make creds
 | `DOCKARR_DOMAIN` | Base domain for the reverse proxy. |
 | `CADDY_EMAIL` | Email for Let's Encrypt certificates. |
 | `KAVITA_PORT` | Host port for Kavita (use `5001` on macOS, where AirPlay grabs `:5000`). |
+| `VPN_*` / `WIREGUARD_*` | VPN credentials, used only when the VPN is enabled (see [VPN](vpn.md)). |
+
+!!! note "`COMPOSE_PROFILES` / `COMPOSE_FILE`"
+    The bootstrap manages these two variables for you to match your `make
+    install` answers (Kavita on/off, VPN on/off). The on/off choice is the
+    install prompt, not this file — don't edit them by hand.
 
 !!! tip "Hardlinks"
     Keep downloads and media under the **same** `DOCKARR_DATA` tree

@@ -26,9 +26,11 @@ def load_modules():
         qui_arr,
         seerr,
         servarr,
+        vpn,
     )
 
     return [
+        vpn.MODULE,
         qbittorrent.MODULE,
         qbittorrent_setup.MODULE,
         qui.MODULE,

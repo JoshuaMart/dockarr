@@ -80,6 +80,48 @@ def ensure_profilarr_fr(store):
         print("  -> auto-config FR désactivée\n")
 
 
+# (env var, prompt label, default). gluetun reads these from .env.
+VPN_FIELDS = [
+    ("VPN_SERVICE_PROVIDER", "Fournisseur VPN (ex. mullvad, protonvpn)", None),
+    ("VPN_TYPE", "Type de VPN", "wireguard"),
+    ("WIREGUARD_PRIVATE_KEY", "Clé privée WireGuard", None),
+    ("WIREGUARD_ADDRESSES", "Adresses WireGuard (ex. 10.2.0.2/32)", None),
+    ("SERVER_COUNTRIES", "Pays de sortie (ex. Switzerland)", None),
+]
+
+
+def ensure_vpn(store):
+    """Ask once whether to route qBittorrent through Gluetun (VPN). If enabled,
+    collect the WireGuard credentials; the vpn module mirrors them into .env and
+    flips COMPOSE_FILE to the VPN overlay. Disabled by default and without a TTY,
+    since the VPN can't run without real credentials."""
+    if store.vpn is not None:
+        return
+
+    if not sys.stdin.isatty():
+        store.set_vpn(False)
+        print("[bootstrap] non-interactive run: VPN disabled")
+        return
+
+    print("\nVPN (Gluetun) — router qBittorrent à travers un VPN WireGuard:")
+    print("  Nécessite un abonnement VPN (clé privée WireGuard, etc.).")
+    choice = None
+    while choice not in ("o", "n", "y"):
+        choice = input("Activer le VPN ? [o/N] : ").strip().lower() or "n"
+
+    if choice not in ("o", "y"):
+        store.set_vpn(False)
+        print("  -> VPN désactivé\n")
+        return
+
+    creds = {}
+    for key, label, default in VPN_FIELDS:
+        suffix = f" [{default}]" if default else ""
+        creds[key] = input(f"  {label}{suffix} : ").strip() or (default or "")
+    store.set_vpn(True, **creds)
+    print("  -> VPN activé (identifiants enregistrés ; ajustables dans .env)\n")
+
+
 def ensure_policy(store):
     """Establish the credential policy once. Interactive on first run;
     falls back to safe defaults when no TTY is attached (automation)."""

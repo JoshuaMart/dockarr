@@ -27,6 +27,7 @@ def main(argv):
     prompts.ensure_language(ctx.secrets)
     prompts.ensure_policy(ctx.secrets)
     prompts.ensure_kavita(ctx.secrets)
+    prompts.ensure_vpn(ctx.secrets)
     prompts.ensure_profilarr_fr(ctx.secrets)
 
     for module in order:

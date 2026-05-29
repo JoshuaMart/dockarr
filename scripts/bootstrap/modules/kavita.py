@@ -1,9 +1,13 @@
 import subprocess
 
+from ..core import dotenv
 from ..core.http import ApiClient
 from ..core.registry import Module
 
 CONTAINER = "kavita"
+# Compose profile gating the service (see docker-compose.yml). Its presence in
+# .env's COMPOSE_PROFILES decides whether `make up` / `make update` start Kavita.
+PROFILE = "kavita"
 
 # (display name, Kavita LibraryType enum, in-container folder). Kavita parses
 # each library according to its single type, so books are split by content type
@@ -27,6 +31,32 @@ def _container_running():
         text=True,
     )
     return result.returncode == 0 and result.stdout.strip() == "true"
+
+
+def _env_profiles():
+    raw = dotenv.get_var("COMPOSE_PROFILES", "")
+    return [p.strip() for p in raw.split(",") if p.strip()]
+
+
+def _env_has_profile():
+    """Whether .env's COMPOSE_PROFILES currently lists the kavita profile."""
+    return PROFILE in _env_profiles()
+
+
+def _set_env_profile(enabled):
+    """Add or remove the kavita profile in .env's COMPOSE_PROFILES so that a
+    plain `docker compose up` (make up / make update) honours the choice without
+    a re-bootstrap. Returns True when .env was changed."""
+    profiles = _env_profiles()
+    if enabled and PROFILE not in profiles:
+        profiles.append(PROFILE)
+    elif not enabled and PROFILE in profiles:
+        profiles = [p for p in profiles if p != PROFILE]
+    else:
+        return False
+    if profiles:
+        return dotenv.set_var("COMPOSE_PROFILES", ",".join(profiles))
+    return dotenv.unset_var("COMPOSE_PROFILES")
 
 
 class Kavita(Module):
@@ -102,8 +132,13 @@ class Kavita(Module):
             ctx.log.info(f"  library '{name}' -> {folder}")
 
     def is_done(self, ctx):
-        if not self._enabled(ctx):
-            # Disabled: the only "work" is making sure the container is stopped.
+        enabled = self._enabled(ctx)
+        # The .env profile flag must match the choice, otherwise `make up` /
+        # `make update` would start (or keep starting) the wrong container.
+        if _env_has_profile() != enabled:
+            return False
+        if not enabled:
+            # Disabled: the only remaining "work" is the container being stopped.
             return not _container_running()
         creds = ctx.secrets.get("kavita")
         if not creds:
@@ -121,16 +156,27 @@ class Kavita(Module):
 
     def run(self, ctx):
         if not self._enabled(ctx):
+            # Drop the profile so future `make up` / `make update` skip Kavita.
+            if _set_env_profile(False):
+                ctx.log.info("  Kavita profile removed from .env")
             if _container_running():
-                subprocess.run(["docker", "stop", CONTAINER], capture_output=True)
-                ctx.log.info("  Kavita disabled — container stopped")
+                subprocess.run(
+                    ["docker", "compose", "stop", CONTAINER], capture_output=True
+                )
+                ctx.log.info("  Kavita disabled, container stopped")
             else:
-                ctx.log.info("  Kavita disabled — skipping")
+                ctx.log.info("  Kavita disabled, skipping")
             return
 
-        # Re-enabled after being stopped: bring the container back up.
+        # Keep the profile so future `make up` / `make update` keep Kavita.
+        if _set_env_profile(True):
+            ctx.log.info("  Kavita profile added to .env")
+        # Bring the container up. Naming the service explicitly creates/starts it
+        # even when its profile is inactive, so this works on the very first run.
         if not _container_running():
-            subprocess.run(["docker", "start", CONTAINER], capture_output=True)
+            subprocess.run(
+                ["docker", "compose", "up", "-d", CONTAINER], capture_output=True
+            )
             ctx.log.info("  Kavita container started")
 
         client = self._client(ctx)

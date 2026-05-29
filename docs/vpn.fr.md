@@ -12,50 +12,39 @@ pour cela.
 
 ## Activer
 
-1. Renseignez les variables VPN dans `.env` (décommentez-les d'abord) :
+Répondez **oui** à la question VPN au `make install`, ou lancez-la plus tard :
 
-   ```bash
-   VPN_SERVICE_PROVIDER=mullvad        # votre fournisseur
-   VPN_TYPE=wireguard
-   WIREGUARD_PRIVATE_KEY=...
-   WIREGUARD_ADDRESSES=10.x.x.x/32
-   SERVER_COUNTRIES=Switzerland
-   ```
+```bash
+make bootstrap m=vpn
+```
 
-   Voir le [wiki Gluetun](https://github.com/qdm12/gluetun-wiki) pour les
-   variables exactes de votre fournisseur.
+Le bootstrap demande votre fournisseur et vos identifiants WireGuard, puis câble
+tout :
 
-2. Dans `docker-compose.yml`, **décommentez le service `gluetun`** en bas.
+- il enregistre les identifiants dans les variables `VPN_*` / `WIREGUARD_*` de
+  `.env` ;
+- il pose `COMPOSE_FILE=docker-compose.yml:docker-compose.vpn.yml` dans `.env`,
+  pour que l'overlay VPN s'empile sur chaque commande `docker compose` ;
+- il recrée qBittorrent en `network_mode: "service:gluetun"`, ses ports passant
+  sur Gluetun.
 
-3. Modifiez le service `qbittorrent` pour qu'il partage le réseau de Gluetun :
+Voir le [wiki Gluetun](https://github.com/qdm12/gluetun-wiki) pour les variables
+exactes de votre fournisseur ; ajustez ensuite les `VPN_*` dans `.env` si besoin
+(puis `make up` pour appliquer).
 
-   ```yaml
-   qbittorrent:
-     image: lscr.io/linuxserver/qbittorrent:5.2.1
-     container_name: qbittorrent
-     network_mode: "service:gluetun"   # <- ajouter
-     # supprimer le bloc `ports:` (déplacé vers gluetun)
-     # supprimer le bloc `networks:` (hérité de gluetun)
-     depends_on:
-       - gluetun
-     environment:
-       PUID: ${PUID:-1000}
-       PGID: ${PGID:-1000}
-       TZ: ${TZ:-Etc/UTC}
-       WEBUI_PORT: ${QBITTORRENT_WEBUI_PORT:-8080}
-     volumes:
-       - ${DOCKARR_CONFIG}/qbittorrent:/config
-       - ${DOCKARR_DATA}:/data
-   ```
+qBittorrent garde le nom interne `qbittorrent:8080` (Gluetun porte cet alias
+réseau), donc Caddy et les apps *arr le joignent sans changement.
 
-   Les ports de qBittorrent sont déjà déclarés sur le service `gluetun`, donc
-   son WebUI reste joignable sur le même port, mais désormais via le tunnel.
+## Désactiver
 
-4. Appliquez :
+Relancez le bootstrap en répondant **non** (réinitialise le flag `_vpn`), puis :
 
-   ```bash
-   make up
-   ```
+```bash
+make bootstrap m=vpn
+```
+
+Gluetun est supprimé, `COMPOSE_FILE` est effacé et qBittorrent revient en mode
+autonome.
 
 ## Vérifier le tunnel
 
@@ -65,4 +54,6 @@ docker exec qbittorrent curl -s https://ipinfo.io/ip # même IP VPN
 ```
 
 Si Gluetun est arrêté, qBittorrent n'a **aucun** accès internet ; c'est le
-kill-switch qui fonctionne comme prévu.
+kill-switch qui fonctionne comme prévu. Notez que si Gluetun redémarre,
+qBittorrent (qui partage son réseau) perd la connectivité jusqu'à son propre
+redémarrage.

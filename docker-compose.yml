@@ -127,44 +127,21 @@ services:
     <<: *common
     image: lscr.io/linuxserver/kavita:0.9.0
     container_name: kavita
+    # Optional service: only started when "kavita" is in COMPOSE_PROFILES (.env).
+    # The bootstrap toggles that flag from the first-run prompt, so `make up` and
+    # `make update` honour the choice without restarting a disabled Kavita.
+    profiles: ["kavita"]
     volumes:
       - ${DOCKARR_CONFIG}/kavita:/config
       - ${DOCKARR_DATA}/media/books:/books
     ports:
       - "${KAVITA_PORT:-5000}:5000"
 
-  # ==========================================================================
-  # OPTIONAL — route qBittorrent through a VPN (Gluetun).
-  # Gluetun is a VPN CLIENT: it needs a real provider (WireGuard/OpenVPN) and
-  # will NOT run "transparently" without one. To enable:
-  #   1. Fill the VPN_* / WIREGUARD_* vars in .env
-  #   2. Uncomment the gluetun service below
-  #   3. On the qbittorrent service: remove its `ports:` and `networks:`,
-  #      then add `network_mode: "service:gluetun"`
-  #   4. Move qBittorrent's port mappings up into gluetun's `ports:`
-  # See docs/vpn for the full step-by-step.
-  # --------------------------------------------------------------------------
-  # gluetun:
-  #   image: qmcgaw/gluetun:latest
-  #   container_name: gluetun
-  #   cap_add:
-  #     - NET_ADMIN
-  #   devices:
-  #     - /dev/net/tun:/dev/net/tun
-  #   environment:
-  #     VPN_SERVICE_PROVIDER: ${VPN_SERVICE_PROVIDER}
-  #     VPN_TYPE: ${VPN_TYPE:-wireguard}
-  #     WIREGUARD_PRIVATE_KEY: ${WIREGUARD_PRIVATE_KEY}
-  #     WIREGUARD_ADDRESSES: ${WIREGUARD_ADDRESSES}
-  #     SERVER_COUNTRIES: ${SERVER_COUNTRIES}
-  #     TZ: ${TZ:-Etc/UTC}
-  #   ports:
-  #     - "${QBITTORRENT_WEBUI_PORT:-8080}:${QBITTORRENT_WEBUI_PORT:-8080}"
-  #     - "6881:6881"
-  #     - "6881:6881/udp"
-  #   restart: unless-stopped
-  #   networks:
-  #     - dockarr
+  # OPTIONAL — route qBittorrent through a VPN (Gluetun) by enabling it at
+  # `make install` (or `make bootstrap m=vpn`). The bootstrap then sets
+  # COMPOSE_FILE=docker-compose.yml:docker-compose.vpn.yml in .env, which layers
+  # the gluetun service and rewires qBittorrent. See docker-compose.vpn.yml and
+  # docs/vpn.
 
 networks:
   dockarr:
