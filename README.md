@@ -41,6 +41,7 @@ single `make update`.
 | [Seerr](https://github.com/seerr-team/seerr) | Media requests & discovery | 5055 |
 | [Jellyfin](https://jellyfin.org/) | Media server (video) | 8096 |
 | [Kavita](https://www.kavitareader.com/) | Media server (books / comics / manga) | 5000 |
+| Dashboard | Landing page with live service status | 8081 |
 
 A [Caddy](https://caddyserver.com/) reverse proxy fronts every service with
 automatic HTTPS under `<service>.yourdomain`.

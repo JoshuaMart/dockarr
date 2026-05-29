@@ -42,6 +42,7 @@ avec un simple `make update`.
 | [Seerr](https://github.com/seerr-team/seerr) | Demandes & découverte de contenu | 5055 |
 | [Jellyfin](https://jellyfin.org/) | Serveur multimédia (vidéo) | 8096 |
 | [Kavita](https://www.kavitareader.com/) | Serveur multimédia (livres / BD / mangas) | 5000 |
+| Dashboard | Page d'accueil avec statut des services en direct | 8081 |
 
 Un reverse proxy [Caddy](https://caddyserver.com/) place chaque service derrière
 du HTTPS automatique sous `<service>.votredomaine`.
