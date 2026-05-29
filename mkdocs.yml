@@ -57,6 +57,7 @@ plugins:
             Installation: Installation
             Configuration: Configuration
             Services: Services
+            Dashboard: Dashboard
             Updates: Mises à jour
             VPN: VPN
 
@@ -65,5 +66,6 @@ nav:
   - Installation: installation.md
   - Configuration: configuration.md
   - Services: services.md
+  - Dashboard: dashboard.md
   - Updates: updates.md
   - VPN: vpn.md

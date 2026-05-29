@@ -31,6 +31,25 @@ services:
       - ./caddy/data:/data
       - ./caddy/config:/config
 
+  # --- Landing dashboard ----------------------------------------------------
+  # Static PHP page listing every service with a live up/down status (probed
+  # server-side). COMPOSE_PROFILES / COMPOSE_FILE / DOCKARR_LANG are passed in so
+  # it can tell which optional services are on and in which language to render.
+  dashboard:
+    <<: *common
+    image: php:8.3-apache
+    container_name: dashboard
+    environment:
+      <<: *common-env
+      DOCKARR_DOMAIN: ${DOCKARR_DOMAIN:-dockarr.local}
+      DOCKARR_LANG: ${DOCKARR_LANG:-en}
+      COMPOSE_PROFILES: ${COMPOSE_PROFILES:-}
+      COMPOSE_FILE: ${COMPOSE_FILE:-}
+    volumes:
+      - ./dashboard:/var/www/html:ro
+    ports:
+      - "8081:80"
+
   # --- Download client ------------------------------------------------------
   qbittorrent:
     <<: *common

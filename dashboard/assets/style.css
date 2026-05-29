@@ -1,0 +1,175 @@
+/* Dockarr dashboard: custom dark layer on top of Pico's reset/typography. */
+
+:root {
+  --bg: #0a0e13;
+  --card: #141922;
+  --card-border: #1f2630;
+  --text: #e6edf3;
+  --muted: #8b95a1;
+  --dim: #5c6672;
+  --cyan: #4aa3ff;
+  --teal: #18b6a0;
+  --green: #35c46b;
+  --red: #f0506e;
+  --grey: #5c6672;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+html { background: var(--bg); }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+main.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 3rem;
+}
+
+/* ---- Top bar ---- */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.brand { display: flex; align-items: center; gap: 1rem; }
+.brand-logo {
+  width: 56px; height: 56px;
+  border-radius: 16px;
+  background: linear-gradient(150deg, #1fcaad, #0f9b86);
+  color: #042;
+  font-size: 2rem; font-weight: 800;
+  display: grid; place-items: center;
+  box-shadow: 0 6px 18px rgba(24, 182, 160, 0.25);
+}
+.brand-text h1 { margin: 0; font-size: 1.9rem; font-weight: 800; line-height: 1; color: #fff; }
+.brand-text h1 span { color: var(--teal); }
+.brand-text p {
+  margin: 0.35rem 0 0;
+  font-size: 0.7rem; letter-spacing: 0.18em;
+  color: var(--dim); text-transform: uppercase;
+}
+
+.controls { display: flex; align-items: center; gap: 0.85rem; }
+.badge {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.5rem 0.9rem;
+  background: var(--card); border: 1px solid var(--card-border);
+  border-radius: 999px; font-size: 0.85rem; color: var(--text);
+}
+.badge .dot { width: 8px; height: 8px; border-radius: 50%; }
+.badge.is-on .dot { background: var(--green); box-shadow: 0 0 8px var(--green); }
+.badge.is-off { color: var(--dim); }
+.badge.is-off .dot { background: var(--grey); }
+
+.clock {
+  font-family: var(--mono); font-size: 1rem; color: var(--text);
+  background: var(--card); border: 1px solid var(--card-border);
+  border-radius: 10px; padding: 0.5rem 0.9rem;
+}
+.refresh {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: transparent; color: var(--text);
+  border: 1px solid var(--card-border); border-radius: 999px;
+  padding: 0.5rem 1rem; font-size: 0.85rem; cursor: pointer;
+  width: auto; margin: 0;
+}
+.refresh:hover { border-color: var(--teal); color: #fff; }
+.refresh .ico { font-size: 1rem; }
+
+/* ---- Summary ---- */
+.summary {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: 2rem; flex-wrap: wrap;
+  margin: 2.5rem 0 3rem;
+}
+.headline { font-size: 4rem; font-weight: 800; line-height: 1; color: var(--dim); }
+.headline #online-count { color: #fff; }
+.headline .sep { margin: 0 0.5rem; color: var(--dim); }
+.headline-word { color: #aeb6c0; }
+.subtitle { margin-top: 0.6rem; font-size: 1.05rem; color: var(--muted); }
+.subtitle .off-count { color: var(--red); }
+
+.summary-side { min-width: 320px; }
+.segments { display: flex; gap: 4px; }
+.segments .seg {
+  height: 12px; flex: 1; border-radius: 3px; background: var(--card-border);
+}
+.segments .seg.up { background: var(--green); }
+.segments .seg.down { background: var(--red); }
+.segments .seg.disabled { background: var(--grey); opacity: 0.5; }
+
+.legend { display: flex; gap: 1.25rem; margin-top: 0.75rem; font-size: 0.85rem; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 0.4rem; }
+.legend .dot { width: 9px; height: 9px; border-radius: 50%; }
+.legend .dot.up { background: var(--green); }
+.legend .dot.down { background: var(--red); }
+.legend .dot.off { border: 1.5px solid var(--grey); }
+
+.next-check { margin-top: 0.75rem; font-family: var(--mono); font-size: 0.85rem; color: var(--muted); }
+.next-check #countdown { color: var(--text); font-weight: 700; }
+
+/* ---- Service groups ---- */
+.group { margin-bottom: 2.25rem; }
+.group-head { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+.group-head h2 {
+  margin: 0; font-size: 0.8rem; font-weight: 700;
+  letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted);
+  white-space: nowrap;
+}
+.group-head::after {
+  content: ""; flex: 1; height: 1px; background: var(--card-border);
+}
+.group-count { font-size: 0.85rem; color: var(--dim); }
+
+.cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+@media (max-width: 720px) { .cards { grid-template-columns: 1fr; } }
+
+.card {
+  display: flex; align-items: center; gap: 1rem;
+  background: var(--card); border: 1px solid var(--card-border);
+  border-radius: 14px; padding: 1rem 1.15rem; margin: 0;
+  transition: border-color 0.15s, transform 0.15s;
+}
+.card:hover { border-color: #2c3542; }
+.card.is-disabled { opacity: 0.45; }
+
+.card-icon {
+  width: 52px; height: 52px; flex: 0 0 52px;
+  border-radius: 12px; background: var(--c, #333);
+  color: #fff; font-weight: 700; font-size: 1.1rem;
+  display: grid; place-items: center;
+}
+.card.is-disabled .card-icon { background: var(--grey); }
+
+.card-body { flex: 1; min-width: 0; }
+.card-name {
+  display: inline-block; color: var(--cyan); font-weight: 700;
+  font-size: 1.05rem; text-decoration: none;
+}
+a.card-name:hover { text-decoration: underline; }
+.card.is-disabled .card-name { color: var(--muted); }
+.card-desc {
+  margin: 0.2rem 0 0; color: var(--dim); font-size: 0.85rem;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.card-status { display: flex; align-items: center; gap: 0.6rem; flex: 0 0 auto; }
+.card-status .latency { font-family: var(--mono); font-size: 0.8rem; color: var(--dim); }
+.card-status .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--card-border); }
+.card-status[data-state="up"] .dot { background: var(--green); box-shadow: 0 0 8px rgba(53, 196, 107, 0.6); }
+.card-status[data-state="down"] .dot { background: var(--red); }
+.card-status[data-state="down"] .latency { color: var(--red); }
+.card-status[data-state="disabled"] .dot { background: transparent; border: 1.5px solid var(--grey); }
+
+/* ---- Footer ---- */
+.footer {
+  display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+  margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--card-border);
+  font-family: var(--mono); font-size: 0.8rem; color: var(--dim);
+}

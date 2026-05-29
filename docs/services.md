@@ -11,6 +11,7 @@
 | Seerr | `ghcr.io/seerr-team/seerr` | `http://seerr:5055` | 5055 |
 | Jellyfin | `lscr.io/linuxserver/jellyfin` | `http://jellyfin:8096` | 8096 |
 | Kavita | `lscr.io/linuxserver/kavita` | `http://kavita:5000` | 5000 |
+| Dashboard | `php:8.3-apache` | `http://dashboard:80` | 8081 |
 | Caddy | `caddy` | — | 80 / 443 |
 
 ## Storage layout
@@ -49,3 +50,5 @@ recreation.
   Radarr/Sonarr.
 - **Jellyfin** streams the video library.
 - **Kavita** serves books, comics and manga.
+- **Dashboard** is the landing page that lists every service with a live
+  up/down status. See [Dashboard](dashboard.md).

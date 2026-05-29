@@ -7,6 +7,10 @@
 # automatically. For local-only use (dockarr.local), browsers will warn about
 # the self-signed cert — that is expected.
 
+dashboard.{$DOCKARR_DOMAIN} {
+	reverse_proxy dashboard:80
+}
+
 qbittorrent.{$DOCKARR_DOMAIN} {
 	reverse_proxy qbittorrent:8080
 }
