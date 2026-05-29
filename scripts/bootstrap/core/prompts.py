@@ -1,11 +1,18 @@
 import sys
 
+from . import dotenv
 from . import secrets as secretsmod
 
 
 def _t(lang, en, fr):
     """Pick the English or French string for the chosen language."""
     return fr if lang == "fr" else en
+
+
+def _sync_lang_env(lang):
+    # Expose the chosen language (non-sensitive) to .env so the dashboard
+    # container can follow it. Idempotent; managed by the bootstrap.
+    dotenv.set_var("DOCKARR_LANG", lang)
 
 
 def _ask_yes_no(prompt, default_yes):
@@ -22,10 +29,12 @@ def ensure_language(store):
     shown in the chosen language. 'en' (default) changes nothing; 'fr' configures
     Jellyfin and Seerr in French."""
     if store.language:
+        _sync_lang_env(store.language)
         return
 
     if not sys.stdin.isatty():
         store.set_language("en")
+        _sync_lang_env("en")
         print("[bootstrap] non-interactive run: language=en")
         return
 
@@ -35,7 +44,9 @@ def ensure_language(store):
     choice = ""
     while choice not in ("1", "2"):
         choice = input("Choice / Choix [1/2] : ").strip() or "1"
-    store.set_language("fr" if choice == "2" else "en")
+    lang = "fr" if choice == "2" else "en"
+    store.set_language(lang)
+    _sync_lang_env(lang)
     print(f"  -> {'Français' if choice == '2' else 'English'}\n")
 
 
