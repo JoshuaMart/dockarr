@@ -37,7 +37,7 @@ services:
   # it can tell which optional services are on and in which language to render.
   dashboard:
     <<: *common
-    image: php:8.3-apache
+    image: php:8.5-apache
     container_name: dashboard
     environment:
       <<: *common-env

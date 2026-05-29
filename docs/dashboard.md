@@ -8,7 +8,7 @@ status and a link to its interface. It is served at
 
 ## How it works
 
-- **Stack**: vanilla PHP (`php:8.3-apache`) + [Pico.css](https://picocss.com)
+- **Stack**: vanilla PHP (`php:8.5-apache`) + [Pico.css](https://picocss.com)
   (vendored, no CDN) + a little vanilla JavaScript. No build step.
 - **Status = reachability only**: a small server-side probe (`api/status.php`)
   hits each service's internal health endpoint, the same ones the bootstrap

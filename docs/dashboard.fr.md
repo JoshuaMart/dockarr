@@ -8,7 +8,7 @@ hors ligne** en direct et un lien vers leur interface. Elle est servie sur
 
 ## Fonctionnement
 
-- **Stack** : PHP vanilla (`php:8.3-apache`) + [Pico.css](https://picocss.com)
+- **Stack** : PHP vanilla (`php:8.5-apache`) + [Pico.css](https://picocss.com)
   (vendorisé, sans CDN) + un peu de JavaScript vanilla. Aucune étape de build.
 - **Statut = joignabilité uniquement** : une petite sonde côté serveur
   (`api/status.php`) interroge l'endpoint de santé interne de chaque service,

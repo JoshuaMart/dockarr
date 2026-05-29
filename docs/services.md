@@ -11,7 +11,7 @@
 | Seerr | `ghcr.io/seerr-team/seerr` | `http://seerr:5055` | 5055 |
 | Jellyfin | `lscr.io/linuxserver/jellyfin` | `http://jellyfin:8096` | 8096 |
 | Kavita | `lscr.io/linuxserver/kavita` | `http://kavita:5000` | 5000 |
-| Dashboard | `php:8.3-apache` | `http://dashboard:80` | 8081 |
+| Dashboard | `php:8.5-apache` | `http://dashboard:80` | 8081 |
 | Caddy | `caddy` | — | 80 / 443 |
 
 ## Storage layout
