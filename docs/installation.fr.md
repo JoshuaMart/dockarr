@@ -38,12 +38,13 @@ sont mémorisées et ne sont plus redemandées) :
 | **Language / Langue** | Langue d'UI appliquée à chaque service : English ou Français. |
 | **Identifiant** | Un nom d'utilisateur partagé par tous les services (vide = aléatoire). |
 | **Mode mot de passe** | Un mot de passe aléatoire partagé, ou un différent par service. |
-| **Kavita** | Garder le serveur livres/BD/mangas, ou l'arrêter. |
+| **Kavita** | Garder le serveur livres/BD/mangas, ou l'arrêter. Un Kavita désactivé le reste après `make up` et `make update` (le choix est mémorisé automatiquement). |
+| **VPN (Gluetun)** | Router qBittorrent à travers un VPN WireGuard. Si activé, le provider et les identifiants WireGuard sont demandés. Voir [VPN](vpn.md). |
 | **Profilarr FR** | Optionnel : remplace la base Profilarr par une base FR curatée et pousse un profil de qualité vers Radarr/Sonarr. |
 
 En exécution non interactive (sans TTY), les valeurs par défaut sont utilisées :
-anglais, identifiant aléatoire, mot de passe par service, Kavita activé,
-Profilarr FR désactivé.
+anglais, identifiant aléatoire, mot de passe par service, Kavita activé, VPN
+désactivé, Profilarr FR désactivé.
 
 ## Identifiants
 
@@ -65,6 +66,13 @@ make creds
 | `DOCKARR_DOMAIN` | Domaine de base pour le reverse proxy. |
 | `CADDY_EMAIL` | Email pour les certificats Let's Encrypt. |
 | `KAVITA_PORT` | Port hôte de Kavita (mettez `5001` sur macOS, où AirPlay occupe `:5000`). |
+| `VPN_*` / `WIREGUARD_*` | Identifiants VPN, utilisés seulement quand le VPN est activé (voir [VPN](vpn.md)). |
+
+!!! note "`COMPOSE_PROFILES` / `COMPOSE_FILE`"
+    Le bootstrap gère ces deux variables pour vous, selon vos réponses au `make
+    install` (Kavita activé/désactivé, VPN activé/désactivé). Le choix
+    activé/désactivé se fait à la question d'installation, pas dans ce fichier —
+    ne les éditez pas à la main.
 
 !!! tip "Hardlinks"
     Gardez téléchargements et médias sous le **même** arbre `DOCKARR_DATA`

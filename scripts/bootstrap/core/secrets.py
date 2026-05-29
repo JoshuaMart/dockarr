@@ -56,6 +56,16 @@ class SecretStore:
         self.data["_kavita"] = {"enabled": enabled}
         self.save()
 
+    @property
+    def vpn(self):
+        return self.data.get("_vpn")
+
+    def set_vpn(self, enabled, **creds):
+        # Stores the choice plus the VPN_* / WIREGUARD_* values; the vpn module
+        # mirrors the latter into .env where gluetun reads them.
+        self.data["_vpn"] = {"enabled": enabled, **creds}
+        self.save()
+
     def set_policy(self, username, password_mode, shared_password=None):
         self.data["_policy"] = {
             "username": username,

@@ -1,0 +1,50 @@
+# ============================================================================
+# VPN overlay: route qBittorrent through Gluetun (WireGuard).
+#
+# Not used on its own. The bootstrap enables it by setting, in .env:
+#   COMPOSE_FILE=docker-compose.yml:docker-compose.vpn.yml
+# so every `docker compose` command (make up / update / logs …) layers this file
+# on top of the base. Choose VPN on/off at `make install` (or `make bootstrap
+# m=vpn`); the WireGuard credentials live in the VPN_* / WIREGUARD_* vars in .env.
+#
+# Gluetun is a VPN CLIENT: it needs a real provider and will NOT pass traffic
+# without valid credentials. See docs/vpn.
+# ============================================================================
+
+services:
+  gluetun:
+    image: qmcgaw/gluetun:latest
+    container_name: gluetun
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    environment:
+      VPN_SERVICE_PROVIDER: ${VPN_SERVICE_PROVIDER}
+      VPN_TYPE: ${VPN_TYPE:-wireguard}
+      WIREGUARD_PRIVATE_KEY: ${WIREGUARD_PRIVATE_KEY}
+      WIREGUARD_ADDRESSES: ${WIREGUARD_ADDRESSES}
+      SERVER_COUNTRIES: ${SERVER_COUNTRIES}
+      TZ: ${TZ:-Etc/UTC}
+    # qBittorrent's published ports move here, since it now shares this netns.
+    ports:
+      - "${QBITTORRENT_WEBUI_PORT:-8080}:${QBITTORRENT_WEBUI_PORT:-8080}"
+      - "6881:6881"
+      - "6881:6881/udp"
+    restart: unless-stopped
+    networks:
+      dockarr:
+        # qBittorrent has no DNS entry of its own while sharing gluetun's netns,
+        # so carry its name here: Caddy and the *arr apps keep reaching
+        # http://qbittorrent:8080 unchanged.
+        aliases:
+          - qbittorrent
+
+  qbittorrent:
+    # `!reset` clears the keys set by the base file (Compose otherwise merges and
+    # would keep them); network_mode cannot coexist with ports/networks.
+    ports: !reset null
+    networks: !reset null
+    network_mode: "service:gluetun"
+    depends_on:
+      - gluetun

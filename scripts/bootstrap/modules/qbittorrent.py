@@ -47,7 +47,9 @@ def _temp_password():
 
 class QBittorrent(Module):
     name = "qbittorrent"
-    depends = ()
+    # Run after vpn so the container is in its final network topology
+    # (standalone or routed through gluetun) before we provision it.
+    depends = ("vpn",)
 
     def is_done(self, ctx):
         creds = ctx.secrets.get("qbittorrent")
