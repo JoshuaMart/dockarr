@@ -7,7 +7,7 @@ from .profilarr import _client, _login
 from .servarr import _api_key
 
 REPO_URL = "https://github.com/Jojont54/Profilarr-database-french-regex"
-BRANCH = "develop"
+BRANCH = "stable"
 DB_NAME = "French DB"
 
 # Profilarr "arr" connection name -> the matching servarr module / host.
