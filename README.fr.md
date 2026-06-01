@@ -13,7 +13,7 @@
 </p>
 
 <p align="center">
-  📖 <a href="https://JoshuaMart.github.io/dockarr/">Documentation</a> · 🇬🇧 <a href="README.md">Read in English</a>
+  📖 <a href="https://www.jomar.fr/dockarr/">Documentation</a> · 🇬🇧 <a href="README.md">Read in English</a>
 </p>
 
 Dockarr met en place tout l'écosystème *arr (client torrent, indexeurs, films,
@@ -25,7 +25,7 @@ bibliothèques. Seul l'ajout de vos propres indexeurs dans Prowlarr reste manuel
 
 Les mises à jour suivent un flux **GitOps** : les versions des images sont
 épinglées dans `docker-compose.yml`,
-[Renovate](https://JoshuaMart.github.io/dockarr/fr/updates/) propose les montées
+[Renovate](https://www.jomar.fr/dockarr/fr/updates/) propose les montées
 de version en pull requests, et le serveur applique les changements fusionnés
 avec un simple `make update`.
 
@@ -98,9 +98,9 @@ re-provisionner un seul service.
 
 ## Documentation
 
-Les guides complets sont sur **<https://JoshuaMart.github.io/dockarr/fr/>** :
+Les guides complets sont sur **<https://www.jomar.fr/dockarr/fr/>** :
 
-- [Installation](https://JoshuaMart.github.io/dockarr/fr/installation/) : prérequis et premier lancement
-- [Configuration](https://JoshuaMart.github.io/dockarr/fr/configuration/) : services, reverse proxy et HTTPS
-- [Mises à jour](https://JoshuaMart.github.io/dockarr/fr/updates/) : le workflow GitOps / Renovate
-- [VPN](https://JoshuaMart.github.io/dockarr/fr/vpn/) : faire passer qBittorrent par Gluetun
+- [Installation](https://www.jomar.fr/dockarr/fr/installation/) : prérequis et premier lancement
+- [Configuration](https://www.jomar.fr/dockarr/fr/configuration/) : services, reverse proxy et HTTPS
+- [Mises à jour](https://www.jomar.fr/dockarr/fr/updates/) : le workflow GitOps / Renovate
+- [VPN](https://www.jomar.fr/dockarr/fr/vpn/) : faire passer qBittorrent par Gluetun
