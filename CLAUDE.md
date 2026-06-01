@@ -75,3 +75,6 @@ with the HTTP status + `resp.text[:200]` on failure; report progress with
 - Profilarr v2 exposes a small REST API for databases, but pushing profiles to
   Radarr/Sonarr goes through **SvelteKit form actions** (`/arr/{id}/sync?/…`),
   not REST.
+- Profilarr's SvelteKit form actions reject cross-origin POSTs ("Request
+  blocked: origin mismatch") behind Caddy unless its `ORIGIN` env matches the
+  external URL — set to `https://profilarr.${DOCKARR_DOMAIN}` in compose.
