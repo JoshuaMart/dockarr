@@ -41,7 +41,8 @@ recreation.
 
 - **qBittorrent** downloads torrents into `/data/torrents`.
 - **QUI** is an alternative, modern web UI to manage one or more qBittorrent
-  instances.
+  instances. The bootstrap also imports Prowlarr's indexers into its Torznab
+  search, so cross-seed lookups work out of the box.
 - **Prowlarr** centralises indexers and pushes them to Radarr/Sonarr.
 - **Radarr** / **Sonarr** grab movies / episodes and import them into the
   media library via hardlink.

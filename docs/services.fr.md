@@ -41,7 +41,8 @@ conteneurs.
 
 - **qBittorrent** télécharge les torrents dans `/data/torrents`.
 - **QUI** est une interface web moderne alternative pour gérer une ou plusieurs
-  instances qBittorrent.
+  instances qBittorrent. Le bootstrap importe aussi les indexeurs de Prowlarr
+  dans sa recherche Torznab, pour que le cross-seed fonctionne d'emblée.
 - **Prowlarr** centralise les indexeurs et les pousse vers Radarr/Sonarr.
 - **Radarr** / **Sonarr** récupèrent films / épisodes et les importent dans la
   bibliothèque par hardlink.
