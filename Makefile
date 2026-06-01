@@ -6,9 +6,16 @@ VENV := .venv
 PYTHON := $(VENV)/bin/python
 BOOTSTRAP_REQS := scripts/bootstrap/requirements.txt
 
+# Values read from .env (with fallbacks) — used to align host folder ownership
+# with the PUID:PGID the LinuxServer.io containers run as.
+PUID       := $(or $(shell grep -E '^PUID=' .env 2>/dev/null | tail -1 | cut -d= -f2),1000)
+PGID       := $(or $(shell grep -E '^PGID=' .env 2>/dev/null | tail -1 | cut -d= -f2),1000)
+DATA_DIR   := $(or $(shell grep -E '^DOCKARR_DATA=' .env 2>/dev/null | tail -1 | cut -d= -f2),./data)
+CONFIG_DIR := $(or $(shell grep -E '^DOCKARR_CONFIG=' .env 2>/dev/null | tail -1 | cut -d= -f2),./config)
+
 .DEFAULT_GOAL := help
 
-.PHONY: help install up down restart pull update logs ps config prune bootstrap creds reset
+.PHONY: help install up down restart pull update logs ps config prune bootstrap creds reset fix-perms
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
@@ -16,10 +23,11 @@ help: ## Show this help
 
 install: ## First-time setup: create .env, data folders, start the stack, provision
 	@test -f .env || (cp .env.example .env; echo "Created .env, edit it then re-run 'make install'"; exit 1)
-	@mkdir -p data/torrents/movies data/torrents/tv data/torrents/books \
-		data/media/movies data/media/tv \
-		data/media/books/manga data/media/books/comics data/media/books/bd \
-		data/media/books/livres
+	@mkdir -p "$(DATA_DIR)"/torrents/movies "$(DATA_DIR)"/torrents/tv "$(DATA_DIR)"/torrents/books \
+		"$(DATA_DIR)"/media/movies "$(DATA_DIR)"/media/tv \
+		"$(DATA_DIR)"/media/books/manga "$(DATA_DIR)"/media/books/comics "$(DATA_DIR)"/media/books/bd \
+		"$(DATA_DIR)"/media/books/livres
+	$(MAKE) fix-perms
 	$(MAKE) up
 	$(MAKE) bootstrap
 
@@ -52,6 +60,17 @@ config: ## Validate and render the merged compose configuration
 
 prune: ## Remove dangling images left over after an update
 	docker image prune -f
+
+fix-perms: ## Align host data/config ownership with PUID:PGID (Linux bind mounts)
+	@if [ "$$(uname)" = "Linux" ]; then \
+		mkdir -p "$(DATA_DIR)" "$(CONFIG_DIR)"; \
+		echo "Aligning $(DATA_DIR) + $(CONFIG_DIR) ownership to $(PUID):$(PGID)…"; \
+		chown -R $(PUID):$(PGID) "$(DATA_DIR)" "$(CONFIG_DIR)" 2>/dev/null \
+			|| sudo chown -R $(PUID):$(PGID) "$(DATA_DIR)" "$(CONFIG_DIR)" \
+			|| echo "  ⚠ Could not chown — run: sudo chown -R $(PUID):$(PGID) $(DATA_DIR) $(CONFIG_DIR)"; \
+	else \
+		echo "Skipping chown (non-Linux host: Docker Desktop virtualises bind-mount ownership)."; \
+	fi
 
 $(VENV)/.installed: $(BOOTSTRAP_REQS)
 	python3 -m venv $(VENV)
