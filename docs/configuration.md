@@ -19,7 +19,7 @@ how to expose everything behind HTTPS.
 | **Prowlarr** | Account + forms auth, Radarr & Sonarr registered as applications (indexers sync to them automatically). |
 | **Profilarr** | Account, Radarr/Sonarr registered as sync targets. Optionally the French database + a quality profile (see below). |
 | **Seerr** | Linked to Jellyfin, Radarr & Sonarr added as default servers. |
-| **Jellyfin** | Admin + setup wizard, `Movies` and `TV Shows` libraries. |
+| **Jellyfin** | Admin + setup wizard, movie and TV libraries (`Movies` / `TV Shows`, or `Films` / `Séries` when French is selected). |
 | **Kavita** | Admin, `Manga` / `Comics` / `BD` / `Livres` libraries (unless disabled at first run). |
 
 Re-run any single service with `make bootstrap m=<service>`; it is idempotent.

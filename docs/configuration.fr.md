@@ -20,7 +20,7 @@ comment tout exposer en HTTPS.
 | **Prowlarr** | Compte + auth par formulaire, Radarr & Sonarr enregistrés comme applications (les indexeurs s'y synchronisent automatiquement). |
 | **Profilarr** | Compte, Radarr/Sonarr enregistrés comme cibles de sync. En option, la base FR + un profil de qualité (voir plus bas). |
 | **Seerr** | Lié à Jellyfin, Radarr & Sonarr ajoutés comme serveurs par défaut. |
-| **Jellyfin** | Admin + assistant de configuration, bibliothèques `Movies` et `TV Shows`. |
+| **Jellyfin** | Admin + assistant de configuration, bibliothèques films et séries (`Films` / `Séries` en français, ou `Movies` / `TV Shows` en anglais). |
 | **Kavita** | Admin, bibliothèques `Manga` / `Comics` / `BD` / `Livres` (sauf si désactivé au premier lancement). |
 
 Re-jouez un service avec `make bootstrap m=<service>` ; c'est idempotent.

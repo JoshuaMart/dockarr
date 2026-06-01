@@ -10,11 +10,23 @@ LOCALES = {
     "fr": ("fr-FR", "FR", "fr"),
 }
 
-# (display name, Jellyfin collectionType, in-container path)
-LIBRARIES = [
-    ("Movies", "movies", "/media/movies"),
-    ("TV Shows", "tvshows", "/media/tv"),
-]
+# (display name, Jellyfin collectionType, in-container path). Only the display
+# name is localised; collectionType and path stay stable across languages so a
+# library is matched by path (see _library_paths) and stays idempotent.
+LIBRARIES_BY_LANG = {
+    "en": [
+        ("Movies", "movies", "/media/movies"),
+        ("TV Shows", "tvshows", "/media/tv"),
+    ],
+    "fr": [
+        ("Films", "movies", "/media/movies"),
+        ("Séries", "tvshows", "/media/tv"),
+    ],
+}
+
+
+def _libraries(ctx):
+    return LIBRARIES_BY_LANG.get(ctx.secrets.language or "en", LIBRARIES_BY_LANG["en"])
 
 
 def _auth_header(token=None):
@@ -63,7 +75,7 @@ class Jellyfin(Module):
         if not token:
             return False
         paths = self._library_paths(ctx, token)
-        if not all(path in paths for _, _, path in LIBRARIES):
+        if not all(path in paths for _, _, path in _libraries(ctx)):
             return False
         return self._network_ok(ctx, token)
 
@@ -141,7 +153,7 @@ class Jellyfin(Module):
     def _ensure_libraries(self, ctx, token):
         client = _client(ctx, token)
         existing = self._library_paths(ctx, token)
-        for name, collection_type, path in LIBRARIES:
+        for name, collection_type, path in _libraries(ctx):
             if path in existing:
                 ctx.log.info(f"  library '{name}' already present")
                 continue
