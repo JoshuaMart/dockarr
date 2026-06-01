@@ -33,11 +33,6 @@ before applying, and you can roll back instantly with `git revert`.
    - labels major bumps (e.g. Jellyfin) and never auto-merges.
 3. Renovate opens a **Dependency Dashboard** issue listing everything it tracks.
 
-!!! note "Why not Watchtower?"
-    Watchtower is archived and updates containers in place with no review and
-    no version history. The Renovate + `make update` flow keeps you in control
-    and makes every deployment traceable in Git.
-
 ## Manual update
 
 Without Renovate you can still bump a version by editing the tag in

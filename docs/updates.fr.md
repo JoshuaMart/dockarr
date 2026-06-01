@@ -36,11 +36,6 @@ avec `git revert`.
 3. Renovate ouvre une issue **Dependency Dashboard** listant tout ce qu'il
    suit.
 
-!!! note "Pourquoi pas Watchtower ?"
-    Watchtower est archivé et met à jour les conteneurs sur place, sans revue
-    ni historique de versions. Le flux Renovate + `make update` vous laisse le
-    contrôle et rend chaque déploiement traçable dans Git.
-
 ## Mise à jour manuelle
 
 Sans Renovate, vous pouvez toujours monter une version en éditant le tag dans
