@@ -1,6 +1,6 @@
-<p align="center">
-  <img alt="Dockarr" src="assets/banner.png" />
-</p>
+<figure markdown="span">
+  ![Dockarr](assets/banner.png)
+</figure>
 
 **Dockarr** déploie, configure, pilote et maintient à jour une stack média
 **\*arr** complète, auto-hébergée, avec Docker Compose.

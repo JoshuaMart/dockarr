@@ -1,6 +1,6 @@
 site_name: Dockarr
 site_description: Deploy, configure, pilot and update a self-hosted *arr media stack
-site_url: https://JoshuaMart.github.io/dockarr/
+site_url: https://www.jomar.fr/dockarr/
 repo_url: https://github.com/JoshuaMart/dockarr
 repo_name: JoshuaMart/dockarr
 edit_uri: edit/main/docs/
@@ -28,6 +28,7 @@ theme:
 
 markdown_extensions:
   - admonition
+  - md_in_html
   - pymdownx.details
   - pymdownx.superfences:
       custom_fences:
