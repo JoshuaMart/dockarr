@@ -113,6 +113,11 @@ services:
     <<: *common
     image: ghcr.io/dictionarry-hub/profilarr:latest
     container_name: profilarr
+    environment:
+      <<: *common-env
+      # SvelteKit form actions reject cross-origin POSTs unless ORIGIN matches
+      # the external URL served by Caddy (scheme + host + port).
+      ORIGIN: https://profilarr.${DOCKARR_DOMAIN:-dockarr.local}
     volumes:
       - ${DOCKARR_CONFIG}/profilarr:/config
     ports:
