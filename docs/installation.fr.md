@@ -14,7 +14,7 @@
 git clone https://github.com/JoshuaMart/dockarr.git
 cd dockarr
 cp .env.example .env
-# éditez .env (domaine, fuseau horaire, etc.), puis :
+# éditez .env (par défaut, seulement DOCKARR_DOMAIN et CADDY_EMAIL), puis :
 make install
 ```
 
@@ -57,6 +57,12 @@ make creds
 
 ## Configurer `.env`
 
+!!! tip "Ce qu'il faut éditer de base"
+    Les valeurs par défaut conviennent telles quelles pour une installation
+    locale. Pour exposer la stack sur votre propre domaine avec HTTPS, les deux
+    seules variables à renseigner sont **`DOCKARR_DOMAIN`** et **`CADDY_EMAIL`**.
+    Tout le reste peut garder sa valeur par défaut.
+
 | Variable | Description |
 | --- | --- |
 | `PUID` / `PGID` | Utilisateur/groupe propriétaire des configs & médias. `id` pour les trouver. |
@@ -79,6 +85,21 @@ make creds
     (`/data/torrents` et `/data/media`). Radarr/Sonarr peuvent ainsi déplacer
     les fichiers par hardlink au lieu de les copier : instantané et sans
     espace disque supplémentaire.
+
+!!! note "Propriété des fichiers (`PUID` / `PGID`)"
+    Les services tournent sous le `PUID:PGID` défini dans `.env` (défaut
+    `1000:1000`). Sous Linux, `make install` aligne automatiquement la propriété
+    de `DOCKARR_DATA` et `DOCKARR_CONFIG` pour que les conteneurs puissent y
+    écrire. Si vous avez créé les dossiers sous un autre utilisateur (ex.
+    `root`) et rencontrez une erreur *« not writable by user 'abc' »*,
+    corrigez-la avec :
+    ```bash
+    make fix-perms
+    # ou manuellement :
+    sudo chown -R 1000:1000 ./data ./config
+    ```
+    Sous macOS cette étape est ignorée : Docker Desktop virtualise la propriété
+    des bind mounts, le problème ne se pose donc jamais.
 
 ## Commandes du quotidien
 

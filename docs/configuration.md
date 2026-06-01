@@ -58,6 +58,7 @@ subdomain of `DOCKARR_DOMAIN`:
 
 | Service | URL |
 | --- | --- |
+| Dashboard | `dashboard.yourdomain` |
 | qBittorrent | `qbittorrent.yourdomain` |
 | QUI | `qui.yourdomain` |
 | Prowlarr | `prowlarr.yourdomain` |

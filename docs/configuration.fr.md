@@ -59,6 +59,7 @@ dédié de `DOCKARR_DOMAIN` :
 
 | Service | URL |
 | --- | --- |
+| Dashboard | `dashboard.votredomaine` |
 | qBittorrent | `qbittorrent.votredomaine` |
 | QUI | `qui.votredomaine` |
 | Prowlarr | `prowlarr.votredomaine` |

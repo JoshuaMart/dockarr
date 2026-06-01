@@ -14,7 +14,7 @@
 git clone https://github.com/JoshuaMart/dockarr.git
 cd dockarr
 cp .env.example .env
-# edit .env (set your domain, timezone, etc.), then:
+# edit .env (by default only DOCKARR_DOMAIN and CADDY_EMAIL), then:
 make install
 ```
 
@@ -57,6 +57,12 @@ make creds
 
 ## Configure `.env`
 
+!!! tip "What to edit by default"
+    The defaults work as-is for a local install. To expose the stack on your own
+    domain with HTTPS, the only two variables you need to set are
+    **`DOCKARR_DOMAIN`** and **`CADDY_EMAIL`**. Everything else can stay at its
+    default value.
+
 | Variable | Description |
 | --- | --- |
 | `PUID` / `PGID` | User/group that own config & media. Run `id` to find yours. |
@@ -77,6 +83,20 @@ make creds
     Keep downloads and media under the **same** `DOCKARR_DATA` tree
     (`/data/torrents` and `/data/media`). This lets Radarr/Sonarr move files
     by hardlink instead of copying: instant and space-free.
+
+!!! note "File ownership (`PUID` / `PGID`)"
+    The services run as the `PUID:PGID` set in `.env` (default `1000:1000`). On
+    Linux, `make install` aligns the ownership of `DOCKARR_DATA` and
+    `DOCKARR_CONFIG` to match, so the containers can write to them. If you
+    created the folders as another user (e.g. `root`) and hit a *"not writable
+    by user 'abc'"* error, fix it with:
+    ```bash
+    make fix-perms
+    # or manually:
+    sudo chown -R 1000:1000 ./data ./config
+    ```
+    On macOS this step is skipped — Docker Desktop virtualises bind-mount
+    ownership, so it never applies.
 
 ## Daily commands
 
