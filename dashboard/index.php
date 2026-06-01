@@ -101,7 +101,7 @@ function e(string $v): string
                         <div class="card-icon" style="--c: <?= e($svc['color']) ?>"><?= e($svc['initials']) ?></div>
                         <div class="card-body">
                             <?php if ($enabled): ?>
-                                <a class="card-name" href="<?= e($url) ?>" target="_blank" rel="noopener"><?= e($svc['name']) ?></a>
+                                <a class="card-name" href="<?= e($url) ?>" target="_blank" rel="noopener noreferrer"><?= e($svc['name']) ?></a>
                             <?php else: ?>
                                 <span class="card-name"><?= e($svc['name']) ?></span>
                             <?php endif; ?>
