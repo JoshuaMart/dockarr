@@ -63,7 +63,9 @@ class Jellyfin(Module):
         if not token:
             return False
         paths = self._library_paths(ctx, token)
-        return all(path in paths for _, _, path in LIBRARIES)
+        if not all(path in paths for _, _, path in LIBRARIES):
+            return False
+        return self._network_ok(ctx, token)
 
     def run(self, ctx):
         client = _client(ctx)
@@ -99,6 +101,30 @@ class Jellyfin(Module):
             raise RuntimeError("Jellyfin authentication failed after setup")
 
         self._ensure_libraries(ctx, token)
+        self._ensure_network(ctx, token)
+
+    def _network_ok(self, ctx, token):
+        resp = _client(ctx, token).get("/System/Configuration/network")
+        return resp.ok and not resp.json().get("LocalNetworkAddresses")
+
+    def _ensure_network(self, ctx, token):
+        # Jellyfin defaults LocalNetworkAddresses to "::", which filters out the
+        # container's real interface: NetworkManager then falls back to the
+        # loopback for every request and spams the log with
+        # "Only loopback ::1 returned, using that as bind address". Clearing it
+        # lets Jellyfin bind to all interfaces normally (refreshes live).
+        client = _client(ctx, token)
+        resp = client.get("/System/Configuration/network")
+        if not resp.ok or not resp.json().get("LocalNetworkAddresses"):
+            return
+        config = resp.json()
+        config["LocalNetworkAddresses"] = []
+        updated = client.post("/System/Configuration/network", json=config)
+        if updated.status_code not in (200, 204):
+            raise RuntimeError(
+                f"network config update failed: HTTP {updated.status_code} {updated.text[:200]}"
+            )
+        ctx.log.info("  cleared LocalNetworkAddresses bind override")
 
     def _create_admin(self, client, username, password):
         # Jellyfin 10.11 no longer auto-creates the first user on boot. The
