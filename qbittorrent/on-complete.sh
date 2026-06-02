@@ -24,11 +24,23 @@ esac
 
 [ -e "$content" ] || exit 0
 mkdir -p "$dest"
-# Skip if already linked, so re-running on the same torrent is a no-op (and to
-# stay portable: busybox cp has no --no-clobber).
-target="$dest/$(basename "$content")"
-[ -e "$target" ] && exit 0
-# cp -al: recursive hardlink copy (same inode, no extra disk). Kavita groups and
-# names series from each file's embedded ComicInfo.xml, so the original release
-# names are left untouched.
-cp -al "$content" "$dest"/
+
+# cp -al: recursive hardlink copy (same inode, no extra disk). Kavita's scanner
+# only descends into sub-directories, so a loose file at the library root is
+# ignored — every download must land inside its own series folder. Kavita then
+# groups and names series from each file's embedded ComicInfo.xml, so the
+# original release names are left untouched.
+if [ -d "$content" ]; then
+  # Folder torrent: hardlink the release folder as-is (already a series folder).
+  target="$dest/$(basename "$content")"
+  [ -e "$target" ] && exit 0   # already linked → no-op (busybox cp has no -n)
+  cp -al "$content" "$dest"/
+else
+  # Single-file torrent: wrap it in a folder named after the file so Kavita sees
+  # a series directory rather than a stray file at the root.
+  name=$(basename "$content")
+  target="$dest/${name%.*}"
+  [ -e "$target" ] && exit 0
+  mkdir -p "$target"
+  cp -al "$content" "$target"/
+fi
