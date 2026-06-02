@@ -14,14 +14,14 @@ comment tout exposer en HTTPS.
 
 | Service | Fait automatiquement |
 | --- | --- |
-| **qBittorrent** | Compte, dossier `/data/torrents`, Automatic TMM, catégories `radarr`/`sonarr`. |
+| **qBittorrent** | Compte, dossier `/data/torrents`, Automatic TMM, catégories `radarr`/`sonarr` + livres (`bd`/`comics`/`manga`/`livres`), script exécuté à la fin du téléchargement qui hardlinke les livres terminés dans la bibliothèque Kavita correspondante. |
 | **QUI** | Compte admin, instance qBittorrent enregistrée. |
 | **Radarr / Sonarr** | Compte + auth par formulaire, client de téléchargement qBittorrent, dossier racine (`/data/media/movies`, `/data/media/tv`). |
 | **Prowlarr** | Compte + auth par formulaire, Radarr & Sonarr enregistrés comme applications (les indexeurs s'y synchronisent automatiquement). |
 | **Profilarr** | Compte, Radarr/Sonarr enregistrés comme cibles de sync. En option, la base FR + un profil de qualité (voir plus bas). |
 | **Seerr** | Lié à Jellyfin, Radarr & Sonarr ajoutés comme serveurs par défaut. |
 | **Jellyfin** | Admin + assistant de configuration, bibliothèques films et séries (`Films` / `Séries` en français, ou `Movies` / `TV Shows` en anglais). |
-| **Kavita** | Admin, bibliothèques `Manga` / `Comics` / `BD` / `Livres` (sauf si désactivé au premier lancement). |
+| **Kavita** | Admin, bibliothèques `Manga` / `Comics` / `BD` / `Livres` avec métadonnées ComicInfo, affichage sur l'Accueil et surveillance des dossiers activés (sauf si désactivé au premier lancement). |
 
 Re-jouez un service avec `make bootstrap m=<service>` ; c'est idempotent.
 

@@ -9,10 +9,21 @@ SAVE_PATH = "/data/torrents"
 CATEGORIES = {
     "radarr": "/data/torrents/movies",
     "sonarr": "/data/torrents/tv",
+    # Book categories. Radarr/Sonarr don't manage these, so ON_COMPLETE_PROGRAM
+    # hardlinks finished downloads into the matching Kavita library; the torrent
+    # keeps seeding from here. Names match the case in qbittorrent/on-complete.sh.
+    "bd": "/data/torrents/books/bd",
+    "comics": "/data/torrents/books/comics",
+    "manga": "/data/torrents/books/manga",
+    "livres": "/data/torrents/books/livres",
 }
 # Cap concurrent downloads; keep uploads/active torrents unlimited so seeding
 # is never throttled (good for private-tracker ratio). Edit to taste.
 MAX_ACTIVE_DOWNLOADS = 3
+
+# Run on torrent completion. The script (mounted at /scripts by compose) ignores
+# every category except the book ones, so movies/TV are untouched.
+ON_COMPLETE_PROGRAM = '/bin/sh /scripts/on-complete.sh "%F" "%L"'
 
 # Automatic TMM is what actually routes downloads into the category subfolders;
 # the relocate flags keep existing torrents in sync when paths change.
@@ -26,6 +37,8 @@ PREFERENCES = {
     "max_active_downloads": MAX_ACTIVE_DOWNLOADS,
     "max_active_uploads": -1,
     "max_active_torrents": -1,
+    "autorun_enabled": True,
+    "autorun_program": ON_COMPLETE_PROGRAM,
 }
 
 

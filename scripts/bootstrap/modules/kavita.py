@@ -122,12 +122,15 @@ class Kavita(Module):
                     "folders": [folder],
                     "fileGroupTypes": FILE_GROUP_TYPES,
                     "excludePatterns": [],
-                    # Kavita defaults both to false on API-created libraries.
+                    # Kavita defaults these to false on API-created libraries.
                     # Without enableMetadata it ignores embedded ComicInfo.xml
                     # (authors, summary, genres, even the <Series> grouping);
                     # without includeInDashboard the library is hidden from Home.
+                    # folderWatching auto-scans when qBittorrent hardlinks a new
+                    # download in (see qbittorrent/on-complete.sh).
                     "enableMetadata": True,
                     "includeInDashboard": True,
+                    "folderWatching": True,
                 },
             )
             if not resp.ok:

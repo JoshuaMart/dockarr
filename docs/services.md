@@ -18,7 +18,11 @@
 
 ```text
 ${DOCKARR_DATA}/
-├── torrents/              # qBittorrent download dir (movies/ tv/ books/)
+├── torrents/              # qBittorrent download dir
+│   ├── movies/            #   Radarr  ┐ hardlinked into media/ by the *arr
+│   ├── tv/                #   Sonarr  ┘
+│   └── books/             #   bd/ comics/ manga/ livres/ ┐ hardlinked into
+│                          #     media/books/ on completion ┘ (on-complete.sh)
 └── media/
     ├── movies/            # Radarr  → Jellyfin
     ├── tv/                # Sonarr  → Jellyfin
@@ -50,6 +54,10 @@ recreation.
 - **Seerr** lets users browse and request content; approved requests flow to
   Radarr/Sonarr.
 - **Jellyfin** streams the video library.
-- **Kavita** serves books, comics and manga.
+- **Kavita** serves books, comics and manga. There is no *arr for books, so a
+  download assigned to the `bd`/`comics`/`manga`/`livres` category is hardlinked
+  into the matching `media/books/` library on completion by
+  `qbittorrent/on-complete.sh`; Kavita groups and names series from each file's
+  embedded `ComicInfo.xml`.
 - **Dashboard** is the landing page that lists every service with a live
   up/down status. See [Dashboard](dashboard.md).

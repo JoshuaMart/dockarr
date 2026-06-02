@@ -13,14 +13,14 @@ how to expose everything behind HTTPS.
 
 | Service | Done automatically |
 | --- | --- |
-| **qBittorrent** | Account, save path `/data/torrents`, Automatic TMM, `radarr`/`sonarr` categories. |
+| **qBittorrent** | Account, save path `/data/torrents`, Automatic TMM, `radarr`/`sonarr` + book (`bd`/`comics`/`manga`/`livres`) categories, run-on-complete script that hardlinks finished book downloads into the matching Kavita library. |
 | **QUI** | Admin account, qBittorrent instance registered. |
 | **Radarr / Sonarr** | Account + forms auth, qBittorrent download client, root folder (`/data/media/movies`, `/data/media/tv`). |
 | **Prowlarr** | Account + forms auth, Radarr & Sonarr registered as applications (indexers sync to them automatically). |
 | **Profilarr** | Account, Radarr/Sonarr registered as sync targets. Optionally the French database + a quality profile (see below). |
 | **Seerr** | Linked to Jellyfin, Radarr & Sonarr added as default servers. |
 | **Jellyfin** | Admin + setup wizard, movie and TV libraries (`Movies` / `TV Shows`, or `Films` / `Séries` when French is selected). |
-| **Kavita** | Admin, `Manga` / `Comics` / `BD` / `Livres` libraries (unless disabled at first run). |
+| **Kavita** | Admin, `Manga` / `Comics` / `BD` / `Livres` libraries with embedded ComicInfo metadata, dashboard inclusion and folder watching enabled (unless disabled at first run). |
 
 Re-run any single service with `make bootstrap m=<service>`; it is idempotent.
 

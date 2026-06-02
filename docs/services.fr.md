@@ -18,7 +18,11 @@
 
 ```text
 ${DOCKARR_DATA}/
-├── torrents/              # dossier de téléchargement qBittorrent (movies/ tv/ books/)
+├── torrents/              # dossier de téléchargement qBittorrent
+│   ├── movies/            #   Radarr  ┐ hardliés dans media/ par les *arr
+│   ├── tv/                #   Sonarr  ┘
+│   └── books/             #   bd/ comics/ manga/ livres/ ┐ hardliés dans
+│                          #     media/books/ à la fin     ┘ (on-complete.sh)
 └── media/
     ├── movies/            # Radarr  → Jellyfin
     ├── tv/                # Sonarr  → Jellyfin
@@ -51,6 +55,10 @@ conteneurs.
 - **Seerr** permet de parcourir et demander du contenu ; les demandes
   approuvées partent vers Radarr/Sonarr.
 - **Jellyfin** diffuse la bibliothèque vidéo.
-- **Kavita** sert les livres, BD et mangas.
+- **Kavita** sert les livres, BD et mangas. Il n'y a pas de *arr pour les
+  livres : un téléchargement rangé dans la catégorie `bd`/`comics`/`manga`/`livres`
+  est hardlié dans la bibliothèque `media/books/` correspondante à la fin du
+  téléchargement par `qbittorrent/on-complete.sh` ; Kavita regroupe et nomme les
+  séries d'après le `ComicInfo.xml` embarqué dans chaque fichier.
 - **Dashboard** est la page d'accueil qui liste tous les services avec un statut
   en ligne / hors ligne en direct. Voir [Dashboard](dashboard.md).

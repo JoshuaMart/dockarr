@@ -61,6 +61,9 @@ services:
     volumes:
       - ${DOCKARR_CONFIG}/qbittorrent:/config
       - ${DOCKARR_DATA}:/data
+      # Hardlinks finished book downloads into the Kavita library (run on
+      # torrent completion; wired by the qbittorrent-setup bootstrap module).
+      - ./qbittorrent/on-complete.sh:/scripts/on-complete.sh:ro
     ports:
       - "${QBITTORRENT_WEBUI_PORT:-8080}:${QBITTORRENT_WEBUI_PORT:-8080}"
       - "6881:6881"
