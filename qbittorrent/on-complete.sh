@@ -27,20 +27,28 @@ mkdir -p "$dest"
 
 # cp -al: recursive hardlink copy (same inode, no extra disk). Kavita's scanner
 # only descends into sub-directories, so a loose file at the library root is
-# ignored — every download must land inside its own series folder. Kavita then
-# groups and names series from each file's embedded ComicInfo.xml, so the
-# original release names are left untouched.
+# ignored — every download must land inside a series folder. Crucially, every
+# volume of a series must share ONE folder: Kavita's incremental scan only
+# re-reads changed folders, and a folder-per-volume layout makes it drop the
+# untouched volumes on rescan ("removing a volume with a file still on disk").
 if [ -d "$content" ]; then
   # Folder torrent: hardlink the release folder as-is (already a series folder).
   target="$dest/$(basename "$content")"
   [ -e "$target" ] && exit 0   # already linked → no-op (busybox cp has no -n)
   cp -al "$content" "$dest"/
 else
-  # Single-file torrent: wrap it in a folder named after the file so Kavita sees
-  # a series directory rather than a stray file at the root.
+  # Single-file torrent (one file per volume). Group every volume under one
+  # folder named after the series. Prefer the embedded ComicInfo <Series> (what
+  # Kavita itself groups on); fall back to the filename with any trailing volume
+  # marker stripped, then the bare filename.
   name=$(basename "$content")
-  target="$dest/${name%.*}"
-  [ -e "$target" ] && exit 0
+  series=$(unzip -p "$content" ComicInfo.xml 2>/dev/null \
+    | sed -n 's:.*<Series>\(.*\)</Series>.*:\1:p' | head -1 | tr -d '\r')
+  [ -z "$series" ] && series=$(printf '%s' "${name%.*}" \
+    | sed -E 's/ - (Tome|Volume|Vol|T)[[:space:]]*[0-9].*$//')
+  [ -z "$series" ] && series="${name%.*}"
+  target="$dest/$series"
+  [ -e "$target/$name" ] && exit 0   # this volume already linked → no-op
   mkdir -p "$target"
   cp -al "$content" "$target"/
 fi

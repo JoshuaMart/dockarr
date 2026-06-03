@@ -29,6 +29,7 @@ ${DOCKARR_DATA}/
     └── books/             # Kavita
         ├── manga/         #   library "Manga"
         ├── comics/        #   library "Comics"
+        │   └── The Boys/  #     one folder per series, all its volumes inside
         ├── bd/            #   library "BD"
         └── livres/        #   library "Livres"
 
@@ -57,7 +58,9 @@ recreation.
 - **Kavita** serves books, comics and manga. There is no *arr for books, so a
   download assigned to the `bd`/`comics`/`manga`/`livres` category is hardlinked
   into the matching `media/books/` library on completion by
-  `qbittorrent/on-complete.sh`; Kavita groups and names series from each file's
-  embedded `ComicInfo.xml`.
+  `qbittorrent/on-complete.sh`, which groups every volume of a series under one
+  folder (named from the embedded `ComicInfo.xml`) so Kavita's incremental scan
+  keeps the whole series together. Kavita then names series from that same
+  `ComicInfo.xml`.
 - **Dashboard** is the landing page that lists every service with a live
   up/down status. See [Dashboard](dashboard.md).
