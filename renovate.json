@@ -31,6 +31,12 @@
       "matchManagers": ["docker-compose"],
       "matchUpdateTypes": ["major"],
       "addLabels": ["major-update"]
+    },
+    {
+      "description": "Ignore linuxserver Ubuntu base-image tags (e.g. 20.04.x) misread as application versions",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["lscr.io/linuxserver/**"],
+      "allowedVersions": "!/^(1[6-9]|2[0-9])\\.(04|10)\\./"
     }
   ]
 }
