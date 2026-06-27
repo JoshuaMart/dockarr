@@ -51,13 +51,14 @@ function dash_strings(string $lang): array
         'disabled'       => 'Désactivé',
         'offline_state'  => 'hors ligne',
         'disabled_state' => 'désactivé',
+        'reachable'      => 'joignable',
+        'all_good'       => 'Tous les services répondent',
         'vpn_on'         => 'VPN actif',
         'vpn_off'        => 'VPN inactif',
         'check'          => 'Vérifier',
         'next_check'     => 'Prochaine vérification dans',
         'seconds'        => 's',
         'always_on'      => 'toujours actif',
-        'footer_note'    => 'statut = joignabilité uniquement · aucune clé API montée',
     ];
     $en = [
         'tagline'        => 'SELF-HOSTED MEDIA STACK',
@@ -67,13 +68,14 @@ function dash_strings(string $lang): array
         'disabled'       => 'Disabled',
         'offline_state'  => 'offline',
         'disabled_state' => 'disabled',
+        'reachable'      => 'reachable',
+        'all_good'       => 'All services responding',
         'vpn_on'         => 'VPN active',
         'vpn_off'        => 'VPN inactive',
         'check'          => 'Refresh',
         'next_check'     => 'Next check in',
         'seconds'        => 's',
         'always_on'      => 'always on',
-        'footer_note'    => 'status = reachability only · no API key mounted',
     ];
     return $lang === 'fr' ? $fr : $en;
 }

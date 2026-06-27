@@ -28,18 +28,24 @@
     $("#clock").textContent = `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
   }
 
+  const SLOW_MS = 120;
+
   function applyCard(key, info) {
     const card = document.querySelector(`.card[data-key="${key}"]`);
     if (!card) return;
-    const statusEl = card.querySelector(".card-status");
     const latencyEl = card.querySelector(".latency");
-    statusEl.dataset.state = info.state;
+    const reachEl = card.querySelector(".reach");
+    card.dataset.state = info.state;
+    card.classList.toggle("is-slow", info.state === "up" && info.ms >= SLOW_MS);
     if (info.state === "up") {
       latencyEl.textContent = `${info.ms} ms`;
+      reachEl.textContent = S.reachable || "reachable";
     } else if (info.state === "down") {
-      latencyEl.textContent = S.offline_state || "offline";
+      latencyEl.textContent = "";
+      reachEl.textContent = S.offline_state || "offline";
     } else {
-      latencyEl.textContent = S.disabled_state || "disabled";
+      latencyEl.textContent = "";
+      reachEl.textContent = S.disabled_state || "disabled";
     }
   }
 
@@ -60,7 +66,7 @@
     const parts = [];
     if (offline > 0) parts.push(`<span class="off-count">${offline} ${S.offline_state || "offline"}</span>`);
     if (disabled > 0) parts.push(`<span>${disabled} ${S.disabled_state || "disabled"}</span>`);
-    subtitleEl.innerHTML = parts.join(" · ");
+    subtitleEl.innerHTML = parts.length ? parts.join(" · ") : (S.all_good || "All services responding");
   }
 
   function applyVpn(on) {

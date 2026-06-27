@@ -10,12 +10,6 @@ $vpn = dash_vpn_enabled();
 $categories = $config['categories'];
 $services = $config['services'];
 
-// Group services by category, preserving both orders.
-$byCat = [];
-foreach ($services as $svc) {
-    $byCat[$svc['category']][] = $svc;
-}
-
 $order = array_column($services, 'key');
 $jsConfig = [
     'refreshSeconds' => 20,
@@ -82,44 +76,39 @@ function e(string $v): string
         </div>
     </section>
 
-    <?php foreach ($categories as $catKey => $labels): ?>
-        <?php if (empty($byCat[$catKey])) continue; ?>
-        <?php $label = $lang === 'fr' ? $labels[0] : $labels[1]; ?>
-        <section class="group">
-            <div class="group-head">
-                <h2><?= e($label) ?></h2>
-                <span class="group-count"><?= count($byCat[$catKey]) ?></span>
-            </div>
-            <div class="cards">
-                <?php foreach ($byCat[$catKey] as $svc): ?>
-                    <?php
-                    $enabled = dash_service_enabled($svc);
-                    $url = "https://{$svc['subdomain']}.{$domain}";
-                    $desc = $lang === 'fr' ? $svc['desc'][0] : $svc['desc'][1];
-                    ?>
-                    <article class="card<?= $enabled ? '' : ' is-disabled' ?>" data-key="<?= e($svc['key']) ?>">
-                        <div class="card-icon" style="--c: <?= e($svc['color']) ?>"><?= e($svc['initials']) ?></div>
-                        <div class="card-body">
-                            <?php if ($enabled): ?>
-                                <a class="card-name" href="<?= e($url) ?>" target="_blank" rel="noopener noreferrer"><?= e($svc['name']) ?></a>
-                            <?php else: ?>
-                                <span class="card-name"><?= e($svc['name']) ?></span>
-                            <?php endif; ?>
-                            <p class="card-desc"><?= e($desc) ?></p>
-                        </div>
-                        <div class="card-status" data-state="pending">
-                            <span class="latency"></span>
-                            <span class="dot"></span>
-                        </div>
-                    </article>
-                <?php endforeach; ?>
-            </div>
-        </section>
-    <?php endforeach; ?>
+    <section class="cards">
+        <?php foreach ($services as $svc): ?>
+            <?php
+            $enabled = dash_service_enabled($svc);
+            $url = "https://{$svc['subdomain']}.{$domain}";
+            $desc = $lang === 'fr' ? $svc['desc'][0] : $svc['desc'][1];
+            $catLabels = $categories[$svc['category']] ?? ['', ''];
+            $catLabel = $lang === 'fr' ? $catLabels[0] : $catLabels[1];
+            ?>
+            <article class="card<?= $enabled ? '' : ' is-disabled' ?>" data-key="<?= e($svc['key']) ?>"
+                     data-state="pending" style="--c: <?= e($svc['color']) ?>" title="<?= e($desc) ?>">
+                <div class="card-top">
+                    <div class="card-icon"><?= e($svc['initials']) ?></div>
+                    <div class="card-head">
+                        <?php if ($enabled): ?>
+                            <a class="card-name" href="<?= e($url) ?>" target="_blank" rel="noopener noreferrer"><?= e($svc['name']) ?></a>
+                        <?php else: ?>
+                            <span class="card-name"><?= e($svc['name']) ?></span>
+                        <?php endif; ?>
+                        <span class="card-cat"><?= e($catLabel) ?></span>
+                    </div>
+                    <span class="card-dot"></span>
+                </div>
+                <div class="card-foot">
+                    <span class="latency"></span>
+                    <span class="reach"></span>
+                </div>
+            </article>
+        <?php endforeach; ?>
+    </section>
 
     <footer class="footer">
         <span>dashboard.<?= e($domain) ?> · <?= e($s['always_on']) ?></span>
-        <span><?= e($s['footer_note']) ?></span>
     </footer>
 
 </main>
