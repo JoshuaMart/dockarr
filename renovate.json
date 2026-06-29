@@ -37,6 +37,12 @@
       "matchDatasources": ["docker"],
       "matchPackageNames": ["lscr.io/linuxserver/**"],
       "allowedVersions": "!/^(1[6-9]|2[0-9])\\.(04|10)\\./"
+    },
+    {
+      "description": "qBittorrent is on 5.x; cap the major to drop legacy linuxserver tags (e.g. 14.3.x, 4.4.x from ubuntu18.04 builds) misread as newer versions",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["lscr.io/linuxserver/qbittorrent"],
+      "allowedVersions": "<6"
     }
   ]
 }
