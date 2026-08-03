@@ -37,7 +37,7 @@ services:
   # it can tell which optional services are on and in which language to render.
   dashboard:
     <<: *common
-    image: php:8.5-apache@sha256:eacc0d98992683cb46e4f8f44b2418a0323855dc8b59d32dc54f7a9b90a966dd
+    image: php:8.5-apache@sha256:52c2e3ecd37f52936a46109720adbda74f12788580906fa8b3eaf07ba360dfbe
     container_name: dashboard
     environment:
       <<: *common-env
@@ -72,7 +72,7 @@ services:
   # Modern web UI for qBittorrent (autobrr/qui)
   qui:
     <<: *common
-    image: ghcr.io/autobrr/qui:latest@sha256:b1abd18f1d544cd5c63a3b8d9c8a91d097143e04df416567a8cb52040f380ca8
+    image: ghcr.io/autobrr/qui:latest@sha256:c1531b69a116b2572f69c76e6e02990b20ca04ef6550c883009df9ebcade1aba
     container_name: qui
     volumes:
       - ${DOCKARR_CONFIG}/qui:/config
@@ -92,7 +92,7 @@ services:
   # --- Movies ---------------------------------------------------------------
   radarr:
     <<: *common
-    image: lscr.io/linuxserver/radarr:6.3.0@sha256:e35056574cdc695a9ee745aa1ecda9eab3842450bf4b7b8471b023790fa3861d
+    image: lscr.io/linuxserver/radarr:6.3.0@sha256:a45b5ab0f850f39edb4cc9c95bbd967b52ddc3d4574a4dfb45561177db6c88f4
     container_name: radarr
     volumes:
       - ${DOCKARR_CONFIG}/radarr:/config
@@ -129,7 +129,7 @@ services:
   # --- Requests -------------------------------------------------------------
   seerr:
     <<: *common
-    image: ghcr.io/seerr-team/seerr:latest@sha256:d206d9e4056bb90178297df58047791196e7721e6dc19384579b0530702fe086
+    image: ghcr.io/seerr-team/seerr:latest@sha256:f4768de5f616248d723e05891f3345a1402123775d03bf0890dbfedc0831bda1
     container_name: seerr
     volumes:
       - ${DOCKARR_CONFIG}/seerr:/app/config
