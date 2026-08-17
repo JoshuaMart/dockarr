@@ -53,7 +53,7 @@ services:
   # --- Download client ------------------------------------------------------
   qbittorrent:
     <<: *common
-    image: lscr.io/linuxserver/qbittorrent:5.2.3@sha256:b6ab43fe86039e5bdd3cc0b59b946414fcff0c8183e93636e6cb438fdac45028
+    image: lscr.io/linuxserver/qbittorrent:5.2.3@sha256:212b86dff59e3962b4082b5ef20a577e76c8f8527d2ab505cfa887b4bcecb0b0
     container_name: qbittorrent
     environment:
       <<: *common-env
@@ -72,7 +72,7 @@ services:
   # Modern web UI for qBittorrent (autobrr/qui)
   qui:
     <<: *common
-    image: ghcr.io/autobrr/qui:latest@sha256:3285c52f0258645d1d5a1684e25596c7355ef525363f0f9464d1c7b2cad14be8
+    image: ghcr.io/autobrr/qui:latest@sha256:9969375e7375194b89eebc490bd16586b6ff4ff403042f6c4f0585eb0e775eaf
     container_name: qui
     volumes:
       - ${DOCKARR_CONFIG}/qui:/config
@@ -139,7 +139,7 @@ services:
   # --- Media server (video) -------------------------------------------------
   jellyfin:
     <<: *common
-    image: lscr.io/linuxserver/jellyfin:10.11.11@sha256:b8dcc7b71d0ea872b74314da4b995c0cf282b1778438c295996e7be88c70fdda
+    image: lscr.io/linuxserver/jellyfin:10.11.11@sha256:0dd18f8de37c7cfbe76877a8b928943b3588beb9678fb223121914ec9a3cdf7c
     container_name: jellyfin
     volumes:
       - ${DOCKARR_CONFIG}/jellyfin:/config
@@ -152,7 +152,7 @@ services:
   # --- Media server (books / comics / manga) --------------------------------
   kavita:
     <<: *common
-    image: lscr.io/linuxserver/kavita:0.9.0@sha256:08bc0679401c5370e32373a9a7fa43ed4aa800388e04dcb2015500c09ead8ddb
+    image: lscr.io/linuxserver/kavita:0.9.0@sha256:7e3be67100797e264756e9a1a9c6dd821c5dc0950b7940a645a629a429831118
     container_name: kavita
     # Optional service: only started when "kavita" is in COMPOSE_PROFILES (.env).
     # The bootstrap toggles that flag from the first-run prompt, so `make up` and
