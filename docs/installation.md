@@ -71,6 +71,7 @@ make creds
 | `DOCKARR_DATA` | Shared downloads + media tree (default `./data`). |
 | `DOCKARR_DOMAIN` | Base domain for the reverse proxy. |
 | `CADDY_EMAIL` | Email for Let's Encrypt certificates. |
+| `DOCKARR_BIND` | Interface the service ports are published on (default `127.0.0.1`, i.e. Caddy only). |
 | `KAVITA_PORT` | Host port for Kavita (use `5001` on macOS, where AirPlay grabs `:5000`). |
 | `VPN_*` / `WIREGUARD_*` | VPN credentials, used only when the VPN is enabled (see [VPN](vpn.md)). |
 
@@ -116,6 +117,19 @@ already configured.
 
 ## Access
 
-Direct access by port (e.g. `http://SERVER_IP:7878` for Radarr) works out of
-the box. For nice HTTPS URLs (`radarr.yourdomain`) point a wildcard DNS record
-at the host and set `DOCKARR_DOMAIN`; see [Configuration](configuration.md).
+Services are reached through Caddy at `https://<service>.yourdomain`: point a
+wildcard DNS record at the host and set `DOCKARR_DOMAIN`; see
+[Configuration](configuration.md).
+
+Their own ports are published on `127.0.0.1` only, so `http://SERVER_IP:7878`
+does **not** answer from another machine. On the host itself,
+`http://localhost:7878` still works (that is how the bootstrap talks to them).
+To expose the raw ports on the network as well, set `DOCKARR_BIND=0.0.0.0` in
+`.env` and `make up`.
+
+!!! warning "Ports bypass the reverse proxy"
+    A published port answers on **every** hostname resolving to the host, since
+    only Caddy looks at the `Host:` header. With a wildcard DNS record,
+    `http://qbittorrent.yourdomain:5000` therefore serves Kavita: the name is
+    decorative, the port decides. That is expected, and one more reason to keep
+    `DOCKARR_BIND=127.0.0.1`.

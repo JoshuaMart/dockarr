@@ -71,6 +71,7 @@ make creds
 | `DOCKARR_DATA` | Arbre partagé téléchargements + médias (défaut `./data`). |
 | `DOCKARR_DOMAIN` | Domaine de base pour le reverse proxy. |
 | `CADDY_EMAIL` | Email pour les certificats Let's Encrypt. |
+| `DOCKARR_BIND` | Interface sur laquelle les ports des services sont publiés (défaut `127.0.0.1`, donc Caddy seul). |
 | `KAVITA_PORT` | Port hôte de Kavita (mettez `5001` sur macOS, où AirPlay occupe `:5000`). |
 | `VPN_*` / `WIREGUARD_*` | Identifiants VPN, utilisés seulement quand le VPN est activé (voir [VPN](vpn.md)). |
 
@@ -119,7 +120,19 @@ déjà configuré.
 
 ## Accès
 
-L'accès direct par port (ex. `http://IP_SERVEUR:7878` pour Radarr) fonctionne
-immédiatement. Pour de belles URLs HTTPS (`radarr.votredomaine`), pointez un
-enregistrement DNS wildcard vers l'hôte et renseignez `DOCKARR_DOMAIN` ; voir
-[Configuration](configuration.md).
+Les services s'utilisent via Caddy, sur `https://<service>.votredomaine` :
+pointez un enregistrement DNS wildcard vers l'hôte et renseignez
+`DOCKARR_DOMAIN` ; voir [Configuration](configuration.md).
+
+Leurs ports propres ne sont publiés que sur `127.0.0.1` : `http://IP_SERVEUR:7878`
+ne répond donc **pas** depuis une autre machine. Sur l'hôte lui-même,
+`http://localhost:7878` fonctionne toujours (c'est ainsi que le bootstrap leur
+parle). Pour exposer aussi les ports bruts sur le réseau, mettez
+`DOCKARR_BIND=0.0.0.0` dans `.env` puis `make up`.
+
+!!! warning "Les ports court-circuitent le reverse proxy"
+    Un port publié répond sur **tous** les noms d'hôte qui résolvent vers la
+    machine, car seul Caddy regarde l'en-tête `Host:`. Avec un DNS wildcard,
+    `http://qbittorrent.votredomaine:5000` sert donc Kavita : le nom est
+    décoratif, c'est le port qui décide. C'est normal, et une raison de plus de
+    garder `DOCKARR_BIND=127.0.0.1`.

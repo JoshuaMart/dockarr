@@ -14,6 +14,12 @@
 | Dashboard | `php:8.5-apache` | `http://dashboard:80` | 8081 |
 | Caddy | `caddy` | — | 80 / 443 |
 
+!!! note "Les ports hôte n'écoutent que sur la loopback"
+    Tous les ports hôte ci-dessus sont publiés sur `${DOCKARR_BIND}` (défaut
+    `127.0.0.1`) : seul Caddy est exposé au réseau. Passez par
+    `https://<service>.${DOCKARR_DOMAIN}`, ou mettez `DOCKARR_BIND=0.0.0.0`
+    dans `.env` pour exposer aussi les ports bruts.
+
 ## Organisation du stockage
 
 ```text

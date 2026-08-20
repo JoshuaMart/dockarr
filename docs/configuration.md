@@ -29,8 +29,8 @@ Re-run any single service with `make bootstrap m=<service>`; it is idempotent.
 Bootstrap connects Prowlarr to Radarr/Sonarr but it does **not** add indexers
 for you (those are personal to your trackers). To finish:
 
-1. Open **Prowlarr** (`http://SERVER_IP:9696` or `prowlarr.yourdomain`), log in
-   with `make creds`.
+1. Open **Prowlarr** (`https://prowlarr.yourdomain`, or `http://localhost:9696`
+   from the host), log in with `make creds`.
 2. **Settings → Indexers → Add indexer** and add your trackers.
 
 Because Radarr and Sonarr are already registered as Prowlarr applications
@@ -81,7 +81,8 @@ each service over HTTPS.
 !!! note "Local use"
     With the default `DOCKARR_DOMAIN=dockarr.local` Caddy issues a self-signed
     certificate, so browsers warn about it; that is expected for local-only
-    use. Either accept the warning, or just use direct port access
-    (`http://SERVER_IP:<port>`).
+    use. Either accept the warning, or reach the services by port from the
+    host itself (`http://localhost:<port>`). From another machine that needs
+    `DOCKARR_BIND=0.0.0.0` in `.env`, see [Installation](installation.md).
 
 Add or remove routes by editing `caddy/Caddyfile`, then `make restart`.
