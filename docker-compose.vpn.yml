@@ -28,7 +28,7 @@ services:
       TZ: ${TZ:-Etc/UTC}
     # qBittorrent's published ports move here, since it now shares this netns.
     ports:
-      - "${QBITTORRENT_WEBUI_PORT:-8080}:${QBITTORRENT_WEBUI_PORT:-8080}"
+      - "${DOCKARR_BIND:-127.0.0.1}:${QBITTORRENT_WEBUI_PORT:-8080}:${QBITTORRENT_WEBUI_PORT:-8080}"
       - "6881:6881"
       - "6881:6881/udp"
     restart: unless-stopped
