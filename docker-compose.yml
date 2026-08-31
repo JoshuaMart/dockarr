@@ -43,7 +43,7 @@ services:
   # it can tell which optional services are on and in which language to render.
   dashboard:
     <<: *common
-    image: php:8.5-apache@sha256:0b69594dd09a95f41b262a4fc03acc03da5b1ceda01dd33876f5226e90e19750
+    image: php:8.5-apache@sha256:705b53b7eb799eba54c2a0f1ab74993330388b8b9a2c5270f0dda78ecb3b29ca
     container_name: dashboard
     environment:
       <<: *common-env
@@ -59,7 +59,7 @@ services:
   # --- Download client ------------------------------------------------------
   qbittorrent:
     <<: *common
-    image: lscr.io/linuxserver/qbittorrent:5.2.3@sha256:304b19cf94bf4fda534e0b086cab9c5f1a9e139a8180c05c0ad7d2ba1526fa99
+    image: lscr.io/linuxserver/qbittorrent:5.2.3@sha256:a00b6a597a3832a1814cde0ef60abc55c94644f3f80902c3432f6af6de8d4a96
     container_name: qbittorrent
     environment:
       <<: *common-env
@@ -78,7 +78,7 @@ services:
   # Modern web UI for qBittorrent (autobrr/qui)
   qui:
     <<: *common
-    image: ghcr.io/autobrr/qui:latest@sha256:9969375e7375194b89eebc490bd16586b6ff4ff403042f6c4f0585eb0e775eaf
+    image: ghcr.io/autobrr/qui:latest@sha256:cd78780c6339547b91eeb49ec69de16ce536ec6e92bbb6d5402fc52ade037e4a
     container_name: qui
     volumes:
       - ${DOCKARR_CONFIG}/qui:/config
@@ -88,7 +88,7 @@ services:
   # --- Indexers -------------------------------------------------------------
   prowlarr:
     <<: *common
-    image: lscr.io/linuxserver/prowlarr:2.5.2@sha256:1295cff29d10b486c0d8324d1559a552140a5932bf8b3d87e398654414f63f92
+    image: lscr.io/linuxserver/prowlarr:2.5.2@sha256:ab91301778251f82a31bbfc87f0497376d59e84439d9a1ceff6a61d594d1e3d7
     container_name: prowlarr
     volumes:
       - ${DOCKARR_CONFIG}/prowlarr:/config
@@ -145,7 +145,7 @@ services:
   # --- Media server (video) -------------------------------------------------
   jellyfin:
     <<: *common
-    image: lscr.io/linuxserver/jellyfin:10.11.11@sha256:aef1046ab41bbd7b48e205e711aa31dfb1fa55a3fb8e22cbbb150a323c4a48c7
+    image: lscr.io/linuxserver/jellyfin:10.11.11@sha256:4f6d8dfc53ec5a1ddf7a90e4338972d57d7b0adff6dc88b53184f8285d0b594f
     container_name: jellyfin
     volumes:
       - ${DOCKARR_CONFIG}/jellyfin:/config
@@ -158,7 +158,7 @@ services:
   # --- Media server (books / comics / manga) --------------------------------
   kavita:
     <<: *common
-    image: lscr.io/linuxserver/kavita:0.9.0@sha256:7e3be67100797e264756e9a1a9c6dd821c5dc0950b7940a645a629a429831118
+    image: lscr.io/linuxserver/kavita:0.9.1@sha256:f6377475ea8e0189257222fdf72ebe3351128c2fa09951300f9cbecdfe6baa29
     container_name: kavita
     # Optional service: only started when "kavita" is in COMPOSE_PROFILES (.env).
     # The bootstrap toggles that flag from the first-run prompt, so `make up` and
