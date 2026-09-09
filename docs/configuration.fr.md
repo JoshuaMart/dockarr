@@ -22,6 +22,7 @@ comment tout exposer en HTTPS.
 | **Seerr** | Lié à Jellyfin, Radarr & Sonarr ajoutés comme serveurs par défaut. |
 | **Jellyfin** | Admin + assistant de configuration, bibliothèques films et séries (`Films` / `Séries` en français, ou `Movies` / `TV Shows` en anglais). |
 | **Kavita** | Admin, bibliothèques `Manga` / `Comics` / `BD` / `Livres` avec métadonnées ComicInfo, affichage sur l'Accueil et surveillance des dossiers activés (sauf si désactivé au premier lancement). |
+| **Radarr/Sonarr → Jellyfin** | Une clé API Jellyfin dédiée, une connexion de rafraîchissement de bibliothèque sur chaque arr, et un format de dossier que Jellyfin sait identifier (voir plus bas). |
 
 Re-jouez un service avec `make bootstrap m=<service>` ; c'est idempotent.
 
@@ -45,6 +46,46 @@ est clonée et son profil de qualité choisi (plus custom formats, nommage et
 delay profiles) est synchronisé vers Radarr et Sonarr, et Seerr l'utilise par
 défaut. Sinon, Radarr/Sonarr gardent leur profil intégré `Any` et vous pouvez
 curer vos profils vous-même dans Profilarr (`:6868`).
+
+## Jellyfin, nommage et rafraîchissement des bibliothèques
+
+Deux conditions doivent être réunies pour qu'un téléchargement terminé
+apparaisse correctement dans Jellyfin. Le module `jellyfin-connect` s'occupe des
+deux.
+
+**1. Il faut prévenir Jellyfin de rescanner.** Radarr et Sonarr reçoivent chacun
+une connexion `Jellyfin` (`jellyfin:8096`, *Update Library* activé) déclenchée à
+l'import, à l'upgrade, au renommage et à la suppression. Sans elle, Jellyfin ne
+découvre les nouveaux fichiers qu'à son scan périodique : une saison fraîchement
+importée apparaît alors comme une série à zéro épisode et la lecture échoue avec
+*« Impossible de trouver une source multimédia valide à lire »*.
+
+**2. Les dossiers doivent porter un identifiant que Jellyfin sait lire.**
+Jellyfin n'embarque que TheMovieDb comme fournisseur de métadonnées et lit les
+identifiants externes écrits `[tmdbid-…]`. La convention Plex utilisée par les
+guides \*arr (et par le sync media management de Profilarr), `{tmdb-…}` /
+`{tvdb-…}`, est ignorée par Jellyfin : il retombe sur une recherche floue par
+titre et peut identifier une œuvre totalement différente. Le bootstrap fixe donc
+le format de **dossier** :
+
+| | Format |
+| --- | --- |
+| Radarr `movieFolderFormat` | `{Movie CleanTitle} ({Release Year}) [tmdbid-{TmdbId}]` |
+| Sonarr `seriesFolderFormat` | `{Series TitleYear} [tmdbid-{TmdbId}]` |
+
+Seul le dossier compte, Jellyfin identifie une œuvre à partir de lui et non du
+nom de fichier : votre nommage de fichiers reste celui choisi par Profilarr ou
+par vous. Les bibliothèques existantes sont migrées : toute œuvre encore dans un
+dossier à l'ancien format est renommée sur place. C'est un `rename()` sur le même
+système de fichiers, les hardlinks survivent et les torrents continuent de
+seeder.
+
+!!! warning "Profilarr peut écraser le nommage"
+    La configuration de nommage appartient aussi au sync **Media Management** de
+    Profilarr, qui pousse la convention Plex. Le bootstrap passe après lui, donc
+    un `make bootstrap` complet finit correct. Mais si vous déclenchez un sync
+    Media Management à la main depuis l'UI Profilarr, rejouez ensuite
+    `make bootstrap m=jellyfin-connect`.
 
 ## Réseau interne
 

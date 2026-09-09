@@ -75,6 +75,13 @@ with the HTTP status + `resp.text[:200]` on failure; report progress with
 - Profilarr v2 exposes a small REST API for databases, but pushing profiles to
   Radarr/Sonarr goes through **SvelteKit form actions** (`/arr/{id}/sync?/…`),
   not REST.
+- Jellyfin only ships TheMovieDb and parses ids written `[tmdbid-…]`; the Plex
+  convention `{tmdb-…}`/`{tvdb-…}` that Profilarr's media-management sync pushes
+  is ignored, and Jellyfin then mis-identifies items by fuzzy title search. The
+  `jellyfin-connect` module pins the folder formats and must stay ordered after
+  `profilarr-fr`.
+- Radarr/Sonarr return secret fields (API keys, passwords) masked as `********`
+  on read, so `is_done` can never compare them to a stored value directly.
 - Profilarr's SvelteKit form actions reject cross-origin POSTs ("Request
   blocked: origin mismatch") behind Caddy unless its `ORIGIN` env matches the
   external URL — set to `https://profilarr.${DOCKARR_DOMAIN}` in compose.
