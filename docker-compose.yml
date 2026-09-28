@@ -23,7 +23,7 @@ services:
   # --- Reverse proxy --------------------------------------------------------
   caddy:
     <<: *common
-    image: caddy:2-alpine@sha256:de23def33b17fb5d1290b0f6c2add1d70780e52341896c00a4c8a2a2fe9d355e
+    image: caddy:2-alpine@sha256:6aeddd44c3078b0f9a35206472a11420648a79c184603ef95957d0a20044cb2b
     container_name: caddy
     ports:
       - "80:80"
@@ -43,7 +43,7 @@ services:
   # it can tell which optional services are on and in which language to render.
   dashboard:
     <<: *common
-    image: php:8.5-apache@sha256:f988b6749b43c04ed0ae73b5b53920d5afdb4b92707c730f1eae2c5d065e694d
+    image: php:8.5-apache@sha256:70d80539dcacae817d9a1320518b95c86bb9568835ef3a7a024d57a4898c90e4
     container_name: dashboard
     environment:
       <<: *common-env
@@ -59,7 +59,7 @@ services:
   # --- Download client ------------------------------------------------------
   qbittorrent:
     <<: *common
-    image: lscr.io/linuxserver/qbittorrent:5.2.3@sha256:457e4eec2ee3f5e4ef59f237ad51f6143deba9f7445ab48bb5204a98888ef9aa
+    image: lscr.io/linuxserver/qbittorrent:5.2.3@sha256:caab2ebce30799ab342c374ea268fef4ec063a8ec3733a4e5d4a8e856ee32ce8
     container_name: qbittorrent
     environment:
       <<: *common-env
@@ -78,7 +78,7 @@ services:
   # Modern web UI for qBittorrent (autobrr/qui)
   qui:
     <<: *common
-    image: ghcr.io/autobrr/qui:latest@sha256:263c131adb007be98469959d5d3625e88476417c900519a1abad0bd609f0f103
+    image: ghcr.io/autobrr/qui:latest@sha256:1172ca40283330445d61189263a65a31ba703770a230b9e2a913f6e57bc2dd23
     container_name: qui
     volumes:
       - ${DOCKARR_CONFIG}/qui:/config
@@ -88,7 +88,7 @@ services:
   # --- Indexers -------------------------------------------------------------
   prowlarr:
     <<: *common
-    image: lscr.io/linuxserver/prowlarr:2.6.5@sha256:c96b56d94d116a9f4de94bc23d3381689492e6c3cfb7435320e8d982e406f99a
+    image: lscr.io/linuxserver/prowlarr:2.6.5@sha256:f2b26429893d4c4cb71941b7ee50b1bdecd9d5f9f9e02d5410615e9f4f7c8d95
     container_name: prowlarr
     volumes:
       - ${DOCKARR_CONFIG}/prowlarr:/config
@@ -109,7 +109,7 @@ services:
   # --- TV shows -------------------------------------------------------------
   sonarr:
     <<: *common
-    image: lscr.io/linuxserver/sonarr:4.0.20@sha256:a5c1a5fecbef946927ab90ad68df319ac5fe644057e5fc18cd993f01ac07b2b2
+    image: lscr.io/linuxserver/sonarr:4.0.20@sha256:f247545d23ba8b233d6604575347e48a623fe6ad75dda02348bf81917f3b5c06
     container_name: sonarr
     volumes:
       - ${DOCKARR_CONFIG}/sonarr:/config
@@ -135,7 +135,7 @@ services:
   # --- Requests -------------------------------------------------------------
   seerr:
     <<: *common
-    image: ghcr.io/seerr-team/seerr:latest@sha256:f4768de5f616248d723e05891f3345a1402123775d03bf0890dbfedc0831bda1
+    image: ghcr.io/seerr-team/seerr:latest@sha256:27602401178d54f1964442287b9f23f67a3fa2252645ee8065839ea1c3f69e45
     container_name: seerr
     volumes:
       - ${DOCKARR_CONFIG}/seerr:/app/config
@@ -158,7 +158,7 @@ services:
   # --- Media server (books / comics / manga) --------------------------------
   kavita:
     <<: *common
-    image: lscr.io/linuxserver/kavita:0.9.1@sha256:cf2a67b0eec795c8f94cfa27c2fba4c347d25deba5f15acffa24cb5a1115ffa8
+    image: lscr.io/linuxserver/kavita:0.9.1@sha256:2842f1c0882b9d0ce3103420eea0a90b27e4537ff29f87b1471cdd752e936837
     container_name: kavita
     # Optional service: only started when "kavita" is in COMPOSE_PROFILES (.env).
     # The bootstrap toggles that flag from the first-run prompt, so `make up` and
