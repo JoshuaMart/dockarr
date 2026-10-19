@@ -88,7 +88,7 @@ services:
   # --- Indexers -------------------------------------------------------------
   prowlarr:
     <<: *common
-    image: lscr.io/linuxserver/prowlarr:2.6.5@sha256:f9151e5bc1025c6d0a630d503210cdcb6bb55a7cc098562609d96a408d838902
+    image: lscr.io/linuxserver/prowlarr:2.6.5@sha256:4e992f9b9229bc8c97c666b10b042a7360bce1d99b196e8aa29fd9805849cbf1
     container_name: prowlarr
     volumes:
       - ${DOCKARR_CONFIG}/prowlarr:/config
@@ -98,7 +98,7 @@ services:
   # --- Movies ---------------------------------------------------------------
   radarr:
     <<: *common
-    image: lscr.io/linuxserver/radarr:6.4.4@sha256:ea6822c956d26db648b237919f41340318f32e5b7dcc4ba702cf256a0f5f3c12
+    image: lscr.io/linuxserver/radarr:6.4.4@sha256:ff4430fe2d6159b4dbaac9903acfecee5aa68dec8c929259e2f3114c63f7a09e
     container_name: radarr
     volumes:
       - ${DOCKARR_CONFIG}/radarr:/config
