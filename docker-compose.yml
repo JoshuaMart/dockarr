@@ -43,7 +43,7 @@ services:
   # it can tell which optional services are on and in which language to render.
   dashboard:
     <<: *common
-    image: php:8.5-apache@sha256:974e3a920309308e1690ed607e6cc3061d6906f90cc8d30fe519daa48bccf101
+    image: php:8.5-apache@sha256:47e6d8849049375e0d19e81f1b391ed88828d4653e0d1b00822185b66b564e8b
     container_name: dashboard
     environment:
       <<: *common-env
@@ -59,7 +59,7 @@ services:
   # --- Download client ------------------------------------------------------
   qbittorrent:
     <<: *common
-    image: lscr.io/linuxserver/qbittorrent:5.2.4@sha256:1ea873647c43d566f251a7122aee330b184509c57ee3257ed19f62dac0f8f24b
+    image: lscr.io/linuxserver/qbittorrent:5.3.0@sha256:e887804fa9de4c60f5f0fb1f3a7e4febe40a8f69fe736f70c4e8589b1f868dab
     container_name: qbittorrent
     environment:
       <<: *common-env
@@ -78,7 +78,7 @@ services:
   # Modern web UI for qBittorrent (autobrr/qui)
   qui:
     <<: *common
-    image: ghcr.io/autobrr/qui:latest@sha256:13a09cb0f27004dd19510f6af37aac140164ba0f9a13333b8698e41bd2d1df4c
+    image: ghcr.io/autobrr/qui:latest@sha256:0348a74d25118969ed31baf5af922685ec03a0ef84af4e01d7c8441bc341d5b8
     container_name: qui
     volumes:
       - ${DOCKARR_CONFIG}/qui:/config
@@ -88,7 +88,7 @@ services:
   # --- Indexers -------------------------------------------------------------
   prowlarr:
     <<: *common
-    image: lscr.io/linuxserver/prowlarr:2.6.5@sha256:4e992f9b9229bc8c97c666b10b042a7360bce1d99b196e8aa29fd9805849cbf1
+    image: lscr.io/linuxserver/prowlarr:2.6.5@sha256:b3b00047ed20f6ce2b16780145cb6a0acb51c9e28ea6aa6f5dcd33c7034f1797
     container_name: prowlarr
     volumes:
       - ${DOCKARR_CONFIG}/prowlarr:/config
@@ -98,7 +98,7 @@ services:
   # --- Movies ---------------------------------------------------------------
   radarr:
     <<: *common
-    image: lscr.io/linuxserver/radarr:6.4.4@sha256:ff4430fe2d6159b4dbaac9903acfecee5aa68dec8c929259e2f3114c63f7a09e
+    image: lscr.io/linuxserver/radarr:6.4.4@sha256:fc0ae3c50f8128b97e84381903ec8d6845c3a569641cb7117c124376cccb57c1
     container_name: radarr
     volumes:
       - ${DOCKARR_CONFIG}/radarr:/config
@@ -109,7 +109,7 @@ services:
   # --- TV shows -------------------------------------------------------------
   sonarr:
     <<: *common
-    image: lscr.io/linuxserver/sonarr:4.0.20@sha256:44b06045a98bc1f237b9ffefc4b28dab64cb29305e4a2a94875ae93b5224e4cc
+    image: lscr.io/linuxserver/sonarr:4.0.20@sha256:889dcc58c6aea859033985894b519b2e6b1e55d92527ed123f9f52e42ae7c97b
     container_name: sonarr
     volumes:
       - ${DOCKARR_CONFIG}/sonarr:/config
@@ -120,7 +120,7 @@ services:
   # --- Quality profiles / custom formats sync -------------------------------
   profilarr:
     <<: *common
-    image: ghcr.io/dictionarry-hub/profilarr:latest@sha256:ddcdd0f340043c2ec0a85ca74b9a6be9be42b1c0288c75fc36a26a43f695860b
+    image: ghcr.io/dictionarry-hub/profilarr:latest@sha256:11ed9f4c62311b956f1a89b44e19cf0908cd3e5169c3e43d59ab8144bbf7fe7d
     container_name: profilarr
     environment:
       <<: *common-env
@@ -135,7 +135,7 @@ services:
   # --- Requests -------------------------------------------------------------
   seerr:
     <<: *common
-    image: ghcr.io/seerr-team/seerr:latest@sha256:27602401178d54f1964442287b9f23f67a3fa2252645ee8065839ea1c3f69e45
+    image: ghcr.io/seerr-team/seerr:latest@sha256:d8fab675b55ad293ded98fd71efcfd46054cbad9746534ae1cc4794a88c0b3be
     container_name: seerr
     volumes:
       - ${DOCKARR_CONFIG}/seerr:/app/config
@@ -158,7 +158,7 @@ services:
   # --- Media server (books / comics / manga) --------------------------------
   kavita:
     <<: *common
-    image: lscr.io/linuxserver/kavita:0.9.1@sha256:49be245da019056e5627f0c01d46871a89b25683aa0b68c7c7afac3918bca0f5
+    image: lscr.io/linuxserver/kavita:0.9.1@sha256:ded5717da004779e52bf51c1acd5ce345c9fe007a22fe97953235ec8072bc2ac
     container_name: kavita
     # Optional service: only started when "kavita" is in COMPOSE_PROFILES (.env).
     # The bootstrap toggles that flag from the first-run prompt, so `make up` and
