@@ -7,13 +7,25 @@ $domain = dash_domain();
 $s = dash_strings($lang);
 $vpn = dash_vpn_enabled();
 
-$categories = $config['categories'];
-$services = $config['services'];
+// One panel per category, services kept in config order.
+$groups = [];
+foreach ($config['categories'] as $catKey => $labels) {
+    $items = array_values(array_filter($config['services'], fn($svc) => $svc['category'] === $catKey));
+    if ($items) {
+        $groups[] = ['key' => $catKey, 'label' => $lang === 'fr' ? $labels[0] : $labels[1], 'services' => $items];
+    }
+}
 
-$order = array_column($services, 'key');
+$refreshSeconds = 20;
+$historySize = 12;
+$names = [];
+foreach ($config['services'] as $svc) {
+    $names[$svc['key']] = $svc['name'];
+}
 $jsConfig = [
-    'refreshSeconds' => 20,
-    'order' => $order,
+    'refreshSeconds' => $refreshSeconds,
+    'historySize' => $historySize,
+    'names' => $names,
     'strings' => $s,
 ];
 
@@ -23,95 +35,97 @@ function e(string $v): string
 }
 ?>
 <!DOCTYPE html>
-<html lang="<?= e($lang) ?>" data-theme="dark">
+<html lang="<?= e($lang) ?>">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
     <title>Dockarr</title>
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2318b6a0'/%3E%3Ctext x='32' y='45' font-size='40' font-family='sans-serif' font-weight='bold' text-anchor='middle' fill='%23043'%3ED%3C/text%3E%3C/svg%3E">
-    <link rel="stylesheet" href="assets/pico.min.css">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2318181b' stroke-width='2' stroke-linejoin='round'%3E%3Crect x='3' y='13' width='18' height='7' rx='2' fill='%23fafafa'/%3E%3Crect x='6' y='4' width='12' height='7' rx='2' fill='%23fafafa'/%3E%3C/svg%3E">
     <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
-<main class="container">
+<div class="page">
 
     <header class="topbar">
         <div class="brand">
-            <div class="brand-logo">D</div>
-            <div class="brand-text">
-                <h1>Dock<span>arr</span></h1>
-                <p><?= e($s['tagline']) ?></p>
-            </div>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="13" width="18" height="7" rx="2"/><rect x="6" y="4" width="12" height="7" rx="2"/></svg>
+            <span class="brand-name">dockarr</span>
+            <span class="brand-sep"></span>
+            <span class="brand-domain"><?= e($domain) ?></span>
         </div>
         <div class="controls">
-            <span id="vpn-badge" class="badge <?= $vpn ? 'is-on' : 'is-off' ?>">
-                <span class="dot"></span>
+            <span id="vpn-badge" class="pill<?= $vpn ? '' : ' is-alert' ?>">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3z"/></svg>
                 <span class="label"><?= e($vpn ? $s['vpn_on'] : $s['vpn_off']) ?></span>
             </span>
             <span id="clock" class="clock">--:--:--</span>
-            <button id="refresh" class="refresh" type="button">
-                <span class="ico">&#x21bb;</span> <?= e($s['check']) ?>
+            <button id="refresh" class="button" type="button">
+                <svg id="refresh-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg>
+                <?= e($s['refresh']) ?>
             </button>
         </div>
     </header>
 
-    <section class="summary">
-        <div class="summary-main">
-            <div class="headline">
-                <span id="online-count">–</span><span class="sep">/</span><span id="total-count">–</span>
-                <span class="headline-word"><?= e($s['online_word']) ?></span>
-            </div>
-            <div id="subtitle" class="subtitle"></div>
-        </div>
-        <div class="summary-side">
-            <div id="segments" class="segments" aria-hidden="true"></div>
-            <div class="legend">
-                <span><span class="dot up"></span><?= e($s['online']) ?></span>
-                <span><span class="dot down"></span><?= e($s['offline']) ?></span>
-                <span><span class="dot off"></span><?= e($s['disabled']) ?></span>
-            </div>
-            <div class="next-check">
-                <?= e($s['next_check']) ?> <span id="countdown">–</span> <?= e($s['seconds']) ?>
-            </div>
+    <div class="progress" aria-hidden="true"><div id="progress-bar"></div></div>
+
+    <section class="summary" aria-live="polite">
+        <span class="next-check">
+            <span id="live-dot" class="live-dot"></span>
+            <?= e($s['next_check']) ?> <span class="num"><span id="countdown"><?= $refreshSeconds ?></span> <?= e($s['seconds']) ?></span>
+        </span>
+        <h1 id="headline"><?= e($s['checking']) ?></h1>
+        <p id="subtitle" class="subtitle"></p>
+        <p id="alert-line" class="alert-line" hidden></p>
+        <div id="strip" class="strip" aria-hidden="true">
+            <?php foreach ($groups as $group): ?>
+                <?php foreach ($group['services'] as $svc): ?>
+                    <span data-key="<?= e($svc['key']) ?>"></span>
+                <?php endforeach; ?>
+            <?php endforeach; ?>
         </div>
     </section>
 
-    <section class="cards">
-        <?php foreach ($services as $svc): ?>
-            <?php
-            $enabled = dash_service_enabled($svc);
-            $url = "https://{$svc['subdomain']}.{$domain}";
-            $desc = $lang === 'fr' ? $svc['desc'][0] : $svc['desc'][1];
-            $catLabels = $categories[$svc['category']] ?? ['', ''];
-            $catLabel = $lang === 'fr' ? $catLabels[0] : $catLabels[1];
-            ?>
-            <article class="card<?= $enabled ? '' : ' is-disabled' ?>" data-key="<?= e($svc['key']) ?>"
-                     data-state="pending" style="--c: <?= e($svc['color']) ?>" title="<?= e($desc) ?>">
-                <div class="card-top">
-                    <div class="card-icon"><?= e($svc['initials']) ?></div>
-                    <div class="card-head">
-                        <?php if ($enabled): ?>
-                            <a class="card-name" href="<?= e($url) ?>" target="_blank" rel="noopener noreferrer"><?= e($svc['name']) ?></a>
-                        <?php else: ?>
-                            <span class="card-name"><?= e($svc['name']) ?></span>
-                        <?php endif; ?>
-                        <span class="card-cat"><?= e($catLabel) ?></span>
-                    </div>
-                    <span class="card-dot"></span>
+    <main class="groups">
+        <?php foreach ($groups as $group): ?>
+            <section class="panel" data-group="<?= e($group['key']) ?>">
+                <div class="panel-head">
+                    <h2><?= e($group['label']) ?></h2>
+                    <span class="panel-count">–</span>
                 </div>
-                <div class="card-foot">
-                    <span class="latency"></span>
-                    <span class="reach"></span>
-                </div>
-            </article>
+                <?php foreach ($group['services'] as $svc): ?>
+                    <?php
+                    $enabled = dash_service_enabled($svc);
+                    $desc = $lang === 'fr' ? $svc['desc'][0] : $svc['desc'][1];
+                    $tag = $enabled ? 'a' : 'div';
+                    $attrs = $enabled
+                        ? ' href="' . e("https://{$svc['subdomain']}.{$domain}") . '" target="_blank" rel="noopener noreferrer"'
+                        : '';
+                    ?>
+                    <<?= $tag ?> class="row" data-key="<?= e($svc['key']) ?>" data-state="<?= $enabled ? 'pending' : 'disabled' ?>"<?= $attrs ?>>
+                        <span class="mono"><?= e($svc['initials']) ?><span class="dot"></span></span>
+                        <span class="text">
+                            <span class="name"><?= e($svc['name']) ?><?php if ($enabled): ?><svg class="go" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></svg><?php endif; ?></span>
+                            <span class="desc" title="<?= e($desc) ?>"><?= e($desc) ?></span>
+                        </span>
+                        <span class="meta">
+                            <?php if ($enabled): ?>
+                                <span class="spark" aria-hidden="true"><?= str_repeat('<span></span>', $historySize) ?></span>
+                            <?php endif; ?>
+                            <span class="status"><?= $enabled ? '' : e($s['disabled']) ?></span>
+                        </span>
+                    </<?= $tag ?>>
+                <?php endforeach; ?>
+            </section>
         <?php endforeach; ?>
-    </section>
+    </main>
 
     <footer class="footer">
-        <span>dashboard.<?= e($domain) ?> · <?= e($s['always_on']) ?></span>
+        <span class="num">dashboard.<?= e($domain) ?></span>
+        <span><?= e(str_replace('{n}', (string) $refreshSeconds, $s['footer'])) ?></span>
     </footer>
 
-</main>
+</div>
 
 <script>window.DASHBOARD = <?= json_encode($jsConfig, JSON_UNESCAPED_UNICODE) ?>;</script>
 <script src="assets/app.js"></script>

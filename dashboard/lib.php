@@ -41,41 +41,46 @@ function dash_service_enabled(array $service): bool
 }
 
 // UI chrome strings. Service descriptions and category labels live in config.php.
+// `{n}`, `{up}`, `{total}` and `{ms}` are filled in by assets/app.js.
 function dash_strings(string $lang): array
 {
     $fr = [
-        'tagline'        => 'SELF-HOSTED MEDIA STACK',
-        'online_word'    => 'en ligne',
-        'online'         => 'En ligne',
+        'all_online'     => 'Tous les services sont en ligne',
+        'one_down'       => '1 service ne répond pas',
+        'many_down'      => '{n} services ne répondent pas',
+        'checking'       => 'Vérification en cours…',
+        'up_of_total'    => '{up} sur {total} en ligne',
+        'disabled_state' => 'désactivé',
+        'median'         => 'latence médiane {ms} ms',
+        'no_response_1'  => 'aucune réponse à la dernière vérification',
+        'no_response_n'  => 'aucune réponse aux {n} dernières vérifications',
         'offline'        => 'Hors ligne',
         'disabled'       => 'Désactivé',
-        'offline_state'  => 'hors ligne',
-        'disabled_state' => 'désactivé',
-        'reachable'      => 'joignable',
-        'all_good'       => 'Tous les services répondent',
         'vpn_on'         => 'VPN actif',
         'vpn_off'        => 'VPN inactif',
-        'check'          => 'Vérifier',
+        'refresh'        => 'Actualiser',
         'next_check'     => 'Prochaine vérification dans',
         'seconds'        => 's',
-        'always_on'      => 'toujours actif',
+        'footer'         => 'Sondé côté serveur, toutes les {n} s',
     ];
     $en = [
-        'tagline'        => 'SELF-HOSTED MEDIA STACK',
-        'online_word'    => 'online',
-        'online'         => 'Online',
+        'all_online'     => 'All services are online',
+        'one_down'       => '1 service is not responding',
+        'many_down'      => '{n} services are not responding',
+        'checking'       => 'Checking…',
+        'up_of_total'    => '{up} of {total} online',
+        'disabled_state' => 'disabled',
+        'median'         => 'median latency {ms} ms',
+        'no_response_1'  => 'no response on the last check',
+        'no_response_n'  => 'no response on the last {n} checks',
         'offline'        => 'Offline',
         'disabled'       => 'Disabled',
-        'offline_state'  => 'offline',
-        'disabled_state' => 'disabled',
-        'reachable'      => 'reachable',
-        'all_good'       => 'All services responding',
         'vpn_on'         => 'VPN active',
         'vpn_off'        => 'VPN inactive',
-        'check'          => 'Refresh',
+        'refresh'        => 'Refresh',
         'next_check'     => 'Next check in',
         'seconds'        => 's',
-        'always_on'      => 'always on',
+        'footer'         => 'Probed server-side, every {n} s',
     ];
     return $lang === 'fr' ? $fr : $en;
 }

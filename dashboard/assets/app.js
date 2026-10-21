@@ -1,25 +1,27 @@
 (() => {
   const cfg = window.DASHBOARD || {};
   const S = cfg.strings || {};
-  const order = cfg.order || [];
+  const names = cfg.names || {};
   const refreshSeconds = cfg.refreshSeconds || 20;
+  const historySize = cfg.historySize || 12;
 
   const $ = (sel) => document.querySelector(sel);
-  const segmentsEl = $("#segments");
-  const onlineEl = $("#online-count");
-  const totalEl = $("#total-count");
+  const fmt = (tpl, vars) => (tpl || "").replace(/\{(\w+)\}/g, (_, k) => vars[k] ?? "");
+
+  const headlineEl = $("#headline");
   const subtitleEl = $("#subtitle");
+  const alertEl = $("#alert-line");
+  const liveDot = $("#live-dot");
   const countdownEl = $("#countdown");
+  const progressEl = $("#progress-bar");
+  const refreshIcon = $("#refresh-icon");
   const vpnBadge = $("#vpn-badge");
 
-  // Build the segmented health bar once, in config order.
-  const segByKey = {};
-  order.forEach((key) => {
-    const seg = document.createElement("span");
-    seg.className = "seg";
-    segmentsEl.appendChild(seg);
-    segByKey[key] = seg;
-  });
+  // Last `historySize` probes per service (null ms = failed), kept in memory
+  // only: a reload starts a fresh sparkline. `failStreak` counts consecutive
+  // failures for the alert line.
+  const history = {};
+  const failStreak = {};
 
   function pad(n) { return String(n).padStart(2, "0"); }
 
@@ -28,59 +30,112 @@
     $("#clock").textContent = `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
   }
 
-  const SLOW_MS = 120;
+  function record(key, info) {
+    const h = (history[key] = history[key] || []);
+    h.push(info.state === "up" ? info.ms : null);
+    if (h.length > historySize) h.shift();
+    failStreak[key] = info.state === "down" ? (failStreak[key] || 0) + 1 : 0;
+  }
 
-  function applyCard(key, info) {
-    const card = document.querySelector(`.card[data-key="${key}"]`);
-    if (!card) return;
-    const latencyEl = card.querySelector(".latency");
-    const reachEl = card.querySelector(".reach");
-    card.dataset.state = info.state;
-    card.classList.toggle("is-slow", info.state === "up" && info.ms >= SLOW_MS);
-    if (info.state === "up") {
-      latencyEl.textContent = `${info.ms} ms`;
-      reachEl.textContent = S.reachable || "reachable";
-    } else if (info.state === "down") {
-      latencyEl.textContent = "";
-      reachEl.textContent = S.offline_state || "offline";
-    } else {
-      latencyEl.textContent = "";
-      reachEl.textContent = S.disabled_state || "disabled";
+  function drawSpark(row, key) {
+    const spark = row.querySelector(".spark");
+    if (!spark) return;
+    const h = history[key] || [];
+    const max = Math.max(1, ...h.filter((v) => v !== null));
+    const bars = spark.children;
+    // Right-align the samples so the newest probe is always the last bar.
+    const offset = bars.length - h.length;
+    for (let i = 0; i < bars.length; i++) {
+      const bar = bars[i];
+      const v = h[i - offset];
+      if (i < offset) {
+        bar.className = "";
+        bar.style.height = "";
+      } else if (v === null) {
+        bar.className = "fail";
+        bar.style.height = "";
+      } else {
+        bar.className = i === bars.length - 1 ? "ok last" : "ok";
+        bar.style.height = `${Math.max(2, Math.round((v / max) * 16))}px`;
+      }
     }
   }
 
-  function applySummary(services) {
-    let online = 0, offline = 0, disabled = 0;
-    order.forEach((key) => {
-      const st = services[key] && services[key].state;
-      const seg = segByKey[key];
-      if (seg) seg.className = `seg ${st || ""}`;
-      if (st === "up") online++;
-      else if (st === "down") offline++;
-      else if (st === "disabled") disabled++;
-    });
-    const enabled = online + offline;
-    onlineEl.textContent = online;
-    totalEl.textContent = enabled;
+  function applyRow(key, info) {
+    const row = document.querySelector(`.row[data-key="${key}"]`);
+    if (!row) return;
+    row.dataset.state = info.state;
+    const status = row.querySelector(".status");
+    if (info.state === "up") status.textContent = `${info.ms} ms`;
+    else if (info.state === "down") status.textContent = S.offline || "Offline";
+    else status.textContent = S.disabled || "Disabled";
+    drawSpark(row, key);
+  }
 
-    const parts = [];
-    if (offline > 0) parts.push(`<span class="off-count">${offline} ${S.offline_state || "offline"}</span>`);
-    if (disabled > 0) parts.push(`<span>${disabled} ${S.disabled_state || "disabled"}</span>`);
-    subtitleEl.innerHTML = parts.length ? parts.join(" · ") : (S.all_good || "All services responding");
+  function applyPanels(services) {
+    document.querySelectorAll(".panel").forEach((panel) => {
+      let up = 0, on = 0;
+      panel.querySelectorAll(".row").forEach((row) => {
+        const st = services[row.dataset.key] && services[row.dataset.key].state;
+        if (st === "up" || st === "down") on++;
+        if (st === "up") up++;
+      });
+      panel.querySelector(".panel-count").textContent = `${up}/${on}`;
+    });
+  }
+
+  function applySummary(services) {
+    const up = [], down = [], disabled = [], latencies = [];
+    Object.entries(services).forEach(([key, info]) => {
+      if (info.state === "up") { up.push(key); latencies.push(info.ms); }
+      else if (info.state === "down") down.push(key);
+      else disabled.push(key);
+    });
+
+    document.querySelectorAll("#strip span").forEach((seg) => {
+      const st = services[seg.dataset.key] && services[seg.dataset.key].state;
+      seg.className = st === "up" || st === "down" ? st : "";
+    });
+
+    headlineEl.textContent = down.length === 0 ? S.all_online
+      : down.length === 1 ? S.one_down
+      : fmt(S.many_down, { n: down.length });
+
+    const parts = [fmt(S.up_of_total, { up: up.length, total: up.length + down.length })];
+    if (disabled.length) parts.push(`${disabled.map((k) => names[k] || k).join(", ")} ${S.disabled_state}`);
+    if (latencies.length) {
+      const sorted = latencies.slice().sort((a, b) => a - b);
+      parts.push(fmt(S.median, { ms: sorted[Math.floor(sorted.length / 2)] }));
+    }
+    subtitleEl.textContent = parts.join(" · ");
+
+    if (down.length) {
+      const streak = Math.min(...down.map((k) => failStreak[k] || 1));
+      const reason = streak > 1 ? fmt(S.no_response_n, { n: streak }) : S.no_response_1;
+      alertEl.textContent = `${down.map((k) => names[k] || k).join(", ")} — ${reason}`;
+      alertEl.hidden = false;
+    } else {
+      alertEl.hidden = true;
+    }
+
+    liveDot.className = `live-dot ${down.length ? "is-alert" : "is-ok"}`;
   }
 
   function applyVpn(on) {
     if (!vpnBadge) return;
-    vpnBadge.classList.toggle("is-on", !!on);
-    vpnBadge.classList.toggle("is-off", !on);
-    vpnBadge.querySelector(".label").textContent = on ? (S.vpn_on || "VPN active") : (S.vpn_off || "VPN inactive");
+    vpnBadge.classList.toggle("is-alert", !on);
+    vpnBadge.querySelector(".label").textContent = on ? S.vpn_on : S.vpn_off;
   }
 
   async function refresh() {
     try {
       const res = await fetch("api/status.php", { cache: "no-store" });
       const data = await res.json();
-      Object.entries(data.services).forEach(([key, info]) => applyCard(key, info));
+      Object.entries(data.services).forEach(([key, info]) => {
+        if (info.state !== "disabled") record(key, info);
+        applyRow(key, info);
+      });
+      applyPanels(data.services);
       applySummary(data.services);
       applyVpn(data.vpn);
     } catch (e) {
@@ -89,21 +144,34 @@
   }
 
   let remaining = refreshSeconds;
-  function tickCountdown() {
+  function drawCountdown() {
     countdownEl.textContent = remaining;
+    // Snap back to full without animating; drain linearly otherwise.
+    const full = remaining === refreshSeconds;
+    progressEl.style.transition = full ? "none" : "width 1s linear";
+    progressEl.style.width = `${(remaining / refreshSeconds) * 100}%`;
+  }
+
+  function tickCountdown() {
+    remaining--;
     if (remaining <= 0) {
       remaining = refreshSeconds;
       refresh();
     }
-    remaining--;
+    drawCountdown();
   }
 
+  let angle = 0;
   $("#refresh").addEventListener("click", () => {
+    angle += 360;
+    refreshIcon.style.transform = `rotate(${angle}deg)`;
     remaining = refreshSeconds;
+    drawCountdown();
     refresh();
   });
 
   tickClock();
+  drawCountdown();
   refresh();
   setInterval(tickClock, 1000);
   setInterval(tickCountdown, 1000);
