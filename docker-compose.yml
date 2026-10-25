@@ -23,7 +23,7 @@ services:
   # --- Reverse proxy --------------------------------------------------------
   caddy:
     <<: *common
-    image: caddy:2-alpine@sha256:d8542f48d34a9cf4e4c11a478865229840e87e4c96ea3f439101f31a5d35f75f
+    image: caddy:2-alpine@sha256:eb4d35b7452d1ab6171fbdbe8d9275b2301dad6dad92115d91e19fb9b24d510f
     container_name: caddy
     ports:
       - "80:80"
@@ -43,7 +43,7 @@ services:
   # it can tell which optional services are on and in which language to render.
   dashboard:
     <<: *common
-    image: php:8.5-apache@sha256:47e6d8849049375e0d19e81f1b391ed88828d4653e0d1b00822185b66b564e8b
+    image: php:8.5-apache@sha256:7cd25eb48f9763dfeabe8fda3939897aca2001802fadeafa1b602f26c735ef96
     container_name: dashboard
     environment:
       <<: *common-env
@@ -59,7 +59,7 @@ services:
   # --- Download client ------------------------------------------------------
   qbittorrent:
     <<: *common
-    image: lscr.io/linuxserver/qbittorrent:5.3.0@sha256:e887804fa9de4c60f5f0fb1f3a7e4febe40a8f69fe736f70c4e8589b1f868dab
+    image: lscr.io/linuxserver/qbittorrent:5.3.0@sha256:75ecbb1c89ab7b0a21c4bde40b4820e4f1649d2d56d83b91913422155e8d2a5f
     container_name: qbittorrent
     environment:
       <<: *common-env
@@ -78,7 +78,7 @@ services:
   # Modern web UI for qBittorrent (autobrr/qui)
   qui:
     <<: *common
-    image: ghcr.io/autobrr/qui:latest@sha256:0348a74d25118969ed31baf5af922685ec03a0ef84af4e01d7c8441bc341d5b8
+    image: ghcr.io/autobrr/qui:latest@sha256:c83ce0370ab372c931ccb3f0ddd0eb1bc850026ce9eafc13ce94443f6f2a2cd3
     container_name: qui
     volumes:
       - ${DOCKARR_CONFIG}/qui:/config
@@ -98,7 +98,7 @@ services:
   # --- Movies ---------------------------------------------------------------
   radarr:
     <<: *common
-    image: lscr.io/linuxserver/radarr:6.4.4@sha256:fc0ae3c50f8128b97e84381903ec8d6845c3a569641cb7117c124376cccb57c1
+    image: lscr.io/linuxserver/radarr:6.4.4@sha256:084b3b2ab1d0ef930660727259546a241f2bdf67c9ed085d54bf1486a6887c9b
     container_name: radarr
     volumes:
       - ${DOCKARR_CONFIG}/radarr:/config
@@ -109,7 +109,7 @@ services:
   # --- TV shows -------------------------------------------------------------
   sonarr:
     <<: *common
-    image: lscr.io/linuxserver/sonarr:4.0.20@sha256:889dcc58c6aea859033985894b519b2e6b1e55d92527ed123f9f52e42ae7c97b
+    image: lscr.io/linuxserver/sonarr:4.0.20@sha256:48e36b608b461273b9dae857725cd0561a127f2c694b687318f6d0c5ce63e5c9
     container_name: sonarr
     volumes:
       - ${DOCKARR_CONFIG}/sonarr:/config
@@ -120,7 +120,7 @@ services:
   # --- Quality profiles / custom formats sync -------------------------------
   profilarr:
     <<: *common
-    image: ghcr.io/dictionarry-hub/profilarr:latest@sha256:11ed9f4c62311b956f1a89b44e19cf0908cd3e5169c3e43d59ab8144bbf7fe7d
+    image: ghcr.io/dictionarry-hub/profilarr:latest@sha256:352e42dec74ecfd68d13bb198fbc6d9346e3a8c55003026e1814e59319a2176d
     container_name: profilarr
     environment:
       <<: *common-env
