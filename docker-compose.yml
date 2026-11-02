@@ -23,7 +23,7 @@ services:
   # --- Reverse proxy --------------------------------------------------------
   caddy:
     <<: *common
-    image: caddy:2-alpine@sha256:eb4d35b7452d1ab6171fbdbe8d9275b2301dad6dad92115d91e19fb9b24d510f
+    image: caddy:2-alpine@sha256:e70b164da81ef698b3ad19af799ea6086ce6d9e48ed4079eb9fe26f6fbf14ee5
     container_name: caddy
     ports:
       - "80:80"
@@ -43,7 +43,7 @@ services:
   # it can tell which optional services are on and in which language to render.
   dashboard:
     <<: *common
-    image: php:8.5-apache@sha256:7cd25eb48f9763dfeabe8fda3939897aca2001802fadeafa1b602f26c735ef96
+    image: php:8.5-apache@sha256:4cc63b3d4e05c40da73e7af5d39364ca2678ac07208919497bda3bbab975be95
     container_name: dashboard
     environment:
       <<: *common-env
@@ -78,7 +78,7 @@ services:
   # Modern web UI for qBittorrent (autobrr/qui)
   qui:
     <<: *common
-    image: ghcr.io/autobrr/qui:latest@sha256:c83ce0370ab372c931ccb3f0ddd0eb1bc850026ce9eafc13ce94443f6f2a2cd3
+    image: ghcr.io/autobrr/qui:latest@sha256:a5b2f5faf6388cce257137c88e4b189458fd799cf9119ed476c980e5a69341b2
     container_name: qui
     volumes:
       - ${DOCKARR_CONFIG}/qui:/config
