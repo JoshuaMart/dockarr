@@ -46,6 +46,13 @@ profiles) is synced to Radarr and Sonarr, and Seerr defaults to it. Otherwise
 Radarr/Sonarr keep their built-in `Any` profile and you can curate profiles
 yourself in Profilarr (`:6868`).
 
+**Upgrades are disabled.** The `arr-no-upgrades` module turns off *Upgrades
+Allowed* on every Radarr/Sonarr quality profile. Once a release is imported it
+stays: Radarr won't grab a bigger version later (a 10 GB WEB-DL replaced by a
+25 GB Bluray), which would fill the disk and leave the superseded torrent behind
+in qBittorrent. If you re-sync quality profiles by hand from the Profilarr UI,
+re-run `make bootstrap m=arr-no-upgrades`.
+
 ## Jellyfin, media naming and library refresh
 
 Two things have to be true for a finished download to show up correctly in

@@ -47,6 +47,14 @@ delay profiles) est synchronisé vers Radarr et Sonarr, et Seerr l'utilise par
 défaut. Sinon, Radarr/Sonarr gardent leur profil intégré `Any` et vous pouvez
 curer vos profils vous-même dans Profilarr (`:6868`).
 
+**Les mises à niveau sont désactivées.** Le module `arr-no-upgrades` décoche
+*Upgrades Allowed* sur tous les profils de qualité de Radarr et Sonarr. Une
+release importée reste en place : Radarr ne va pas en chercher une version plus
+lourde ensuite (un WEB-DL de 10 Go remplacé par un Bluray de 25 Go), ce qui
+remplirait le disque et laisserait l'ancien torrent traîner dans qBittorrent. Si
+vous resynchronisez les profils de qualité à la main depuis l'UI Profilarr,
+relancez `make bootstrap m=arr-no-upgrades`.
+
 ## Jellyfin, nommage et rafraîchissement des bibliothèques
 
 Deux conditions doivent être réunies pour qu'un téléchargement terminé
