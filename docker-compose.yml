@@ -23,7 +23,7 @@ services:
   # --- Reverse proxy --------------------------------------------------------
   caddy:
     <<: *common
-    image: caddy:2-alpine@sha256:e70b164da81ef698b3ad19af799ea6086ce6d9e48ed4079eb9fe26f6fbf14ee5
+    image: caddy:2-alpine@sha256:f6228111e5fafa1a5238258d0858e103f10599b8d1659a146e7726681a002bb9
     container_name: caddy
     ports:
       - "80:80"
@@ -43,7 +43,7 @@ services:
   # it can tell which optional services are on and in which language to render.
   dashboard:
     <<: *common
-    image: php:8.5-apache@sha256:4cc63b3d4e05c40da73e7af5d39364ca2678ac07208919497bda3bbab975be95
+    image: php:8.5-apache@sha256:304eac8c3e14c194d05e1d67e756b641051d31d6848dd74db47dfae95f3142b8
     container_name: dashboard
     environment:
       <<: *common-env
@@ -59,7 +59,7 @@ services:
   # --- Download client ------------------------------------------------------
   qbittorrent:
     <<: *common
-    image: lscr.io/linuxserver/qbittorrent:5.3.0@sha256:75ecbb1c89ab7b0a21c4bde40b4820e4f1649d2d56d83b91913422155e8d2a5f
+    image: lscr.io/linuxserver/qbittorrent:5.3.0@sha256:05c1454f9a32967affc1f34f67f8cc0cc57dd805dca45489fe797095a6286556
     container_name: qbittorrent
     environment:
       <<: *common-env
@@ -88,7 +88,7 @@ services:
   # --- Indexers -------------------------------------------------------------
   prowlarr:
     <<: *common
-    image: lscr.io/linuxserver/prowlarr:2.6.5@sha256:b3b00047ed20f6ce2b16780145cb6a0acb51c9e28ea6aa6f5dcd33c7034f1797
+    image: lscr.io/linuxserver/prowlarr:2.7.0@sha256:431d7efebcef466e56adaa40a7a2fa2b0e85159a037b8bf465eaadbf0cf5bedf
     container_name: prowlarr
     volumes:
       - ${DOCKARR_CONFIG}/prowlarr:/config
@@ -98,7 +98,7 @@ services:
   # --- Movies ---------------------------------------------------------------
   radarr:
     <<: *common
-    image: lscr.io/linuxserver/radarr:6.4.4@sha256:084b3b2ab1d0ef930660727259546a241f2bdf67c9ed085d54bf1486a6887c9b
+    image: lscr.io/linuxserver/radarr:6.4.4@sha256:ade5937813c6ae415b29db729386e53fea3ecf067a019849bafbe2d2a6ec02ba
     container_name: radarr
     volumes:
       - ${DOCKARR_CONFIG}/radarr:/config
@@ -109,7 +109,7 @@ services:
   # --- TV shows -------------------------------------------------------------
   sonarr:
     <<: *common
-    image: lscr.io/linuxserver/sonarr:4.0.20@sha256:48e36b608b461273b9dae857725cd0561a127f2c694b687318f6d0c5ce63e5c9
+    image: lscr.io/linuxserver/sonarr:4.0.20@sha256:386c962ee6e260e3a5656b25df2ed056bcc9b6410e197d075f9547fd14c23bca
     container_name: sonarr
     volumes:
       - ${DOCKARR_CONFIG}/sonarr:/config
@@ -158,7 +158,7 @@ services:
   # --- Media server (books / comics / manga) --------------------------------
   kavita:
     <<: *common
-    image: lscr.io/linuxserver/kavita:0.9.1@sha256:ded5717da004779e52bf51c1acd5ce345c9fe007a22fe97953235ec8072bc2ac
+    image: lscr.io/linuxserver/kavita:0.9.1@sha256:de556f62dadefdd59dc69e04855db91157d774f84b242568c8858251aff1340b
     container_name: kavita
     # Optional service: only started when "kavita" is in COMPOSE_PROFILES (.env).
     # The bootstrap toggles that flag from the first-run prompt, so `make up` and
