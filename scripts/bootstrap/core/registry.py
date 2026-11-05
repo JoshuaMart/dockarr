@@ -14,6 +14,7 @@ def load_modules():
     here as integrations are built."""
     from ..modules import (
         arr_setup,
+        arr_upgrades,
         jellyfin,
         jellyfin_connect,
         kavita,
@@ -49,6 +50,7 @@ def load_modules():
         prowlarr_apps.MODULE,
         profilarr_targets.MODULE,
         profilarr_fr.MODULE,
+        arr_upgrades.MODULE,
         jellyfin_connect.MODULE,
         seerr.MODULE,
     ]
