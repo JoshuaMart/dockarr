@@ -23,7 +23,7 @@ services:
   # --- Reverse proxy --------------------------------------------------------
   caddy:
     <<: *common
-    image: caddy:2-alpine@sha256:f6228111e5fafa1a5238258d0858e103f10599b8d1659a146e7726681a002bb9
+    image: caddy:2-alpine@sha256:78bd35025c7ba85961dd149ae670315129954e77abe2383ac47c89106b35ade9
     container_name: caddy
     ports:
       - "80:80"
@@ -43,7 +43,7 @@ services:
   # it can tell which optional services are on and in which language to render.
   dashboard:
     <<: *common
-    image: php:8.5-apache@sha256:304eac8c3e14c194d05e1d67e756b641051d31d6848dd74db47dfae95f3142b8
+    image: php:8.5-apache@sha256:08af36df144462d84c7f16190557eec06cb9f656882685610b712a15eec54d46
     container_name: dashboard
     environment:
       <<: *common-env
@@ -59,7 +59,7 @@ services:
   # --- Download client ------------------------------------------------------
   qbittorrent:
     <<: *common
-    image: lscr.io/linuxserver/qbittorrent:5.3.0@sha256:05c1454f9a32967affc1f34f67f8cc0cc57dd805dca45489fe797095a6286556
+    image: lscr.io/linuxserver/qbittorrent:5.3.0@sha256:3d4c4545d51a690a0df15a2ff99038823a88a9822df8e794526447b9afbd7384
     container_name: qbittorrent
     environment:
       <<: *common-env
@@ -98,7 +98,7 @@ services:
   # --- Movies ---------------------------------------------------------------
   radarr:
     <<: *common
-    image: lscr.io/linuxserver/radarr:6.4.4@sha256:ade5937813c6ae415b29db729386e53fea3ecf067a019849bafbe2d2a6ec02ba
+    image: lscr.io/linuxserver/radarr:6.4.4@sha256:51a9ac2a9eb47afc833541e5fd6c11b86eb9f810694c22fa2429e3078e9194b2
     container_name: radarr
     volumes:
       - ${DOCKARR_CONFIG}/radarr:/config
@@ -109,7 +109,7 @@ services:
   # --- TV shows -------------------------------------------------------------
   sonarr:
     <<: *common
-    image: lscr.io/linuxserver/sonarr:4.0.20@sha256:386c962ee6e260e3a5656b25df2ed056bcc9b6410e197d075f9547fd14c23bca
+    image: lscr.io/linuxserver/sonarr:4.0.20@sha256:673dc4609a5672bc8e46069c86ffcea283a86b48d34a6c93d8da8c24a1b87571
     container_name: sonarr
     volumes:
       - ${DOCKARR_CONFIG}/sonarr:/config
